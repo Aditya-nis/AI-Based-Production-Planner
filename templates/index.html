@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Home | AI-Based Production & Resource Planning{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+        <!-- Hero Section with Glowing Ambient Backdrop -->
+        <div class="card content-card border-0 shadow-lg p-4 p-md-5 mb-5 text-center position-relative overflow-hidden" 
+             style="background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 50%, #0f172a 100%); color: #ffffff; border-radius: 20px;">
+            
+            <!-- Ambient Glow Effect -->
+            <div style="position: absolute; top: -50%; left: 30%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%); pointer-events: none;"></div>
+
+            <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mx-auto mb-3 font-monospace small" style="width: fit-content;">
+                <i class="fa-solid fa-brain me-1 text-info"></i> ARTIFICIAL INTELLIGENCE MINI-PROJECT
+            </div>
+            
+            <h1 class="display-4 fw-extrabold mb-3 tracking-tight" style="background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                AI-Based Production & Resource Planning
+            </h1>
+            
+            <h4 class="fw-normal mb-4 text-info font-monospace" style="font-size: 1.25rem;">
+                Constraint Satisfaction Based Intelligent Production Scheduling
+            </h4>
+            
+            <p class="lead text-light text-opacity-75 col-md-10 mx-auto mb-5" style="font-size: 1.05rem; line-height: 1.7;">
+                An intelligent scheduling engine that models factory manufacturing as a formal 
+                <strong>Constraint Satisfaction Problem (CSP)</strong>. Using recursive backtracking search, 
+                the <strong>Minimum Remaining Values (MRV)</strong> heuristic, and strict <strong>forward checking</strong>, 
+                the system autonomously derives zero-conflict production schedules across machines, technicians, and warehouse stock.
+            </p>
+
+            <div class="d-flex justify-content-center gap-2 gap-sm-3 flex-wrap mb-4 hero-btn-group">
+                <a href="{{ url_for('planner.planner_view') }}" class="btn btn-primary btn-lg px-4 py-3 shadow d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Start Planning</span>
+                </a>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-light btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>View Dashboard</span>
+                </a>
+                <a href="{{ url_for('planner.ai_explanation_view') }}" class="btn btn-outline-info btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>How AI Works</span>
+                </a>
+            </div>
+
+            <!-- Stats Bar Inside Hero -->
+            <div class="row g-3 justify-content-center pt-4 border-top border-secondary border-opacity-25 mt-2">
+                <div class="col-6 col-md-3">
+                    <div class="text-uppercase small text-muted font-monospace" style="font-size: 0.75rem;">Constraints Checked</div>
+                    <div class="fs-4 fw-bold text-white mt-1">10 Hard Rules</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-uppercase small text-muted font-monospace" style="font-size: 0.75rem;">Search Technique</div>
+                    <div class="fs-4 fw-bold text-info mt-1">Backtracking + MRV</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-uppercase small text-muted font-monospace" style="font-size: 0.75rem;">Collision Guarantee</div>
+                    <div class="fs-4 fw-bold text-success mt-1">0% Overlap</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-uppercase small text-muted font-monospace" style="font-size: 0.75rem;">Execution Speed</div>
+                    <div class="fs-4 fw-bold text-warning mt-1">&lt; 5 Milliseconds</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic & Technical Insights Grid -->
+        <div class="row g-4 mb-5">
+            <!-- What is CSP -->
+            <div class="col-md-6">
+                <div class="card content-card h-100 p-4 border-0 shadow-sm position-relative">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-primary-subtle text-primary me-3 shadow-sm">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">What is a Constraint Satisfaction Problem?</h5>
+                            <span class="text-muted small">Formal AI Formulation &lang;X, D, C&rang;</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary" style="font-size: 0.95rem;">
+                        In Artificial Intelligence, a <strong>CSP</strong> represents computational problems as a set of variables that must be assigned values satisfying declarative constraints.
+                    </p>
+                    <ul class="text-secondary small mb-0 ps-3">
+                        <li class="mb-2"><strong>Variables (&Chi;):</strong> Discrete production tasks requiring allocation.</li>
+                        <li class="mb-2"><strong>Domains (&Delta;):</strong> Cartesian product of allowable <code>(Machine, Worker, Time Slot)</code> tuples.</li>
+                        <li><strong>Constraints (C):</strong> 10 Hard logical requirements (zero temporal overlaps, certified operator skills, shift hours, inventory stock, and deadlines).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- How AI Helps Production Planning -->
+            <div class="col-md-6">
+                <div class="card content-card h-100 p-4 border-0 shadow-sm">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-success-subtle text-success me-3 shadow-sm">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">How AI Helps Production Planning</h5>
+                            <span class="text-muted small">Tackling Combinatorial Complexity</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary" style="font-size: 0.95rem;">
+                        Manual scheduling suffers from combinatorial explosion ($O(D^N)$), where search space grows exponentially with orders, leading to machine idle time, operator double-booking, and missed customer deadlines.
+                    </p>
+                    <p class="text-secondary small mb-0">
+                        Our Python AI engine applies <strong>Minimum Remaining Values (MRV)</strong> and <strong>Forward Checking</strong> to prune invalid search branches high up in the decision tree, deriving mathematically proven, conflict-free schedules in under 5 milliseconds.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Features Cards Grid -->
+        <div class="card content-card border-0 shadow-sm p-4 p-md-5 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold mb-1">Key AI Engine Capabilities</h4>
+                    <p class="text-muted small mb-0">Engineered for academic rigor, industrial realism, and viva demonstrations</p>
+                </div>
+                <span class="badge bg-light text-dark border px-3 py-2 font-monospace">Core Features</span>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-primary text-white mb-3" style="width: 44px; height: 44px;">
+                            <i class="fa-solid fa-code-branch"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">Recursive Backtracking</h6>
+                        <p class="small text-secondary mb-0">
+                            Full state-space exploration algorithm that incrementally commits variable values and backtracks systematically upon detecting constraint breaches.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-info text-white mb-3" style="width: 44px; height: 44px;">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">MRV Heuristic</h6>
+                        <p class="small text-secondary mb-0">
+                            Chooses the most constrained task first ("Fail-First" principle), minimizing total search steps and avoiding fruitless downstream evaluations.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-warning text-white mb-3" style="width: 44px; height: 44px;">
+                            <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">Dynamic Rescheduling</h6>
+                        <p class="small text-secondary mb-0">
+                            Instantly recalculates alternative feasible schedules when machinery enters maintenance or operators take leave.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-danger text-white mb-3" style="width: 44px; height: 44px;">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">10 Hard Constraints</h6>
+                        <p class="small text-secondary mb-0">
+                            Rigorous validation of machine non-overlap, worker non-overlap, skills, shift hours, raw material stock, and delivery deadlines.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-purple text-white mb-3" style="background:#8b5cf6; width: 44px; height: 44px;">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">Explainable AI (XAI)</h6>
+                        <p class="small text-secondary mb-0">
+                            Displays human-readable justification cards for every scheduling decision and root-cause conflict diagnostics when unsolvable.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100 bg-light bg-opacity-50 stat-card">
+                        <div class="stat-icon bg-success text-white mb-3" style="width: 44px; height: 44px;">
+                            <i class="fa-solid fa-file-csv"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">Audit Trails &amp; Export</h6>
+                        <p class="small text-secondary mb-0">
+                            Persists constraint evaluations to SQLite audit logs and enables one-click CSV export and printable shopfloor dispatch sheets.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack Strip -->
+        <div class="card content-card border-0 shadow-sm p-4 text-center">
+            <h6 class="fw-bold text-uppercase tracking-wider text-muted mb-4 font-monospace" style="font-size: 0.8rem;">
+                Constructed Using Verified Academic Technologies
+            </h6>
+            <div class="row g-3 justify-content-center">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 border rounded-3 bg-white">
+                        <i class="fa-brands fa-python fs-2 text-primary mb-2"></i>
+                        <div class="fw-bold">Python 3</div>
+                        <div class="text-muted small">Pure AI / CSP Solver</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 border rounded-3 bg-white">
+                        <i class="fa-solid fa-flask fs-2 text-dark mb-2"></i>
+                        <div class="fw-bold">Flask 3</div>
+                        <div class="text-muted small">Web Application Engine</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 border rounded-3 bg-white">
+                        <i class="fa-solid fa-database fs-2 text-warning mb-2"></i>
+                        <div class="fw-bold">SQLite Database</div>
+                        <div class="text-muted small">Relational Persistence</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 border rounded-3 bg-white">
+                        <i class="fa-brands fa-bootstrap fs-2 text-purple mb-2" style="color: #6f42c1;"></i>
+                        <div class="fw-bold">Bootstrap 5 &amp; Chart.js</div>
+                        <div class="text-muted small">Responsive UI &amp; Analytics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

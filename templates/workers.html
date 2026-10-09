@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Workers Management | AI-Based Production & Resource Planning{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0">Production Operators & Workforce</h3>
+        <p class="text-secondary small mb-0">Manage technical skills, daily availability hours, and leave schedules</p>
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWorkerModal">
+        <i class="fa-solid fa-user-plus me-1"></i> Add Worker
+    </button>
+</div>
+
+<!-- Workers Table Card -->
+<div class="card content-card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-bold text-dark"><i class="fa-solid fa-users-gear text-warning me-2"></i>Active Workforce ({{ workers|length }})</span>
+        <span class="badge bg-light text-muted border font-monospace small">Standard Shift: 8.0 hrs</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Worker ID</th>
+                        <th>Full Name</th>
+                        <th>Skill Specialization</th>
+                        <th>Available Hours</th>
+                        <th>Shift Hours</th>
+                        <th>Status</th>
+                        <th>Quick Leave Toggle</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for w in workers %}
+                    <tr>
+                        <td class="fw-bold font-monospace text-primary">{{ w.worker_code }}</td>
+                        <td><strong>{{ w.name }}</strong></td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary border">
+                                {{ w.skill }}
+                            </span>
+                        </td>
+                        <td>{{ w.available_hours }} hrs/day</td>
+                        <td>
+                            <span class="font-monospace small text-muted">{{ w.start_time }} – {{ w.end_time }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-status-{{ w.status.lower() }}">
+                                {{ w.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <form action="{{ url_for('workers.toggle_status', worker_id=w.id) }}" method="POST" class="d-inline">
+                                {% if w.status == 'Available' %}
+                                <input type="hidden" name="status" value="Leave">
+                                <button type="submit" class="btn btn-sm btn-outline-warning py-0 px-2" title="Mark on Leave to test CSP rescheduling">
+                                    <i class="fa-solid fa-user-slash me-1"></i>Set Leave
+                                </button>
+                                {% else %}
+                                <input type="hidden" name="status" value="Available">
+                                <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2" title="Restore to Available">
+                                    <i class="fa-solid fa-user-check me-1"></i>Set Available
+                                </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editWorkerModal{{ w.id }}"
+                                    title="Edit Worker">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <form action="{{ url_for('workers.delete_worker', worker_id=w.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete worker {{ w.name }}?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Worker">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <!-- Edit Worker Modal -->
+                    <div class="modal fade" id="editWorkerModal{{ w.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <form action="{{ url_for('workers.edit_worker', worker_id=w.id) }}" method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold">Edit Worker: {{ w.name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Worker Name</label>
+                                            <input type="text" name="name" class="form-control" value="{{ w.name }}" required>
+                                        </div>
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold">Worker ID / Code</label>
+                                                <input type="text" name="worker_code" class="form-control" value="{{ w.worker_code }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold">Skill</label>
+                                                <select name="skill" class="form-select">
+                                                    <option value="Assembly" {% if w.skill == 'Assembly' %}selected{% endif %}>Assembly</option>
+                                                    <option value="Cutting" {% if w.skill == 'Cutting' %}selected{% endif %}>Cutting</option>
+                                                    <option value="Drilling" {% if w.skill == 'Drilling' %}selected{% endif %}>Drilling</option>
+                                                    <option value="General" {% if w.skill == 'General' %}selected{% endif %}>General</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Available Hours</label>
+                                                <input type="number" step="0.5" name="available_hours" class="form-control" value="{{ w.available_hours }}" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Shift Start</label>
+                                                <input type="text" name="start_time" class="form-control" value="{{ w.start_time }}" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Shift End</label>
+                                                <input type="text" name="end_time" class="form-control" value="{{ w.end_time }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Status</label>
+                                            <select name="status" class="form-select">
+                                                <option value="Available" {% if w.status == 'Available' %}selected{% endif %}>Available</option>
+                                                <option value="Leave" {% if w.status == 'Leave' %}selected{% endif %}>Leave</option>
+                                                <option value="Unavailable" {% if w.status == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Worker Modal -->
+<div class="modal fade" id="addWorkerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ url_for('workers.add_worker') }}" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Register Production Worker</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Full Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g., Emily Watson" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Worker Code / ID</label>
+                            <input type="text" name="worker_code" class="form-control" placeholder="e.g., WRK-005" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Skill Specialization</label>
+                            <select name="skill" class="form-select">
+                                <option value="Assembly">Assembly</option>
+                                <option value="Cutting">Cutting</option>
+                                <option value="Drilling">Drilling</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Available Hours</label>
+                            <input type="number" step="0.5" name="available_hours" class="form-control" value="8.0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Shift Start</label>
+                            <input type="text" name="start_time" class="form-control" value="08:00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Shift End</label>
+                            <input type="text" name="end_time" class="form-control" value="17:00" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Available" selected>Available</option>
+                            <option value="Leave">Leave</option>
+                            <option value="Unavailable">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Worker</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

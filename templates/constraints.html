@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Active Constraints | AI-Based Production & Resource Planning{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 tracking-tight">Active Production Constraints</h3>
+        <p class="text-secondary small mb-0">Formal declarative mathematical rules enforced by the CSP Backtracking Search engine</p>
+    </div>
+    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 font-monospace">
+        <i class="fa-solid fa-lock me-1"></i> 10 HARD CONSTRAINTS ENFORCED
+    </span>
+</div>
+
+<!-- 10 Hard Constraints Cards Grid -->
+<div class="row g-3 mb-5">
+    <!-- C1 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">1. Machine Temporal Non-Overlap</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">A machine cannot process two production tasks at the same time.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                &forall; i &ne; j, (M(T<sub>i</sub>) = M(T<sub>j</sub>)) &rArr; [Start(T<sub>i</sub>), End(T<sub>i</sub>)) &cap; [Start(T<sub>j</sub>), End(T<sub>j</sub>)) = &empty;
+            </div>
+        </div>
+    </div>
+
+    <!-- C2 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">2. Worker Temporal Non-Overlap</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">A worker cannot work on two production tasks at the same time.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                &forall; i &ne; j, (W(T<sub>i</sub>) = W(T<sub>j</sub>)) &rArr; [Start(T<sub>i</sub>), End(T<sub>i</sub>)) &cap; [Start(T<sub>j</sub>), End(T<sub>j</sub>)) = &empty;
+            </div>
+        </div>
+    </div>
+
+    <!-- C3 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">3. Machine Technical Compatibility</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">A product can only be assigned to a machine matching its required type.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                Type(M(T<sub>i</sub>)) = RequiredType(T<sub>i</sub>)
+            </div>
+        </div>
+    </div>
+
+    <!-- C4 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">4. Worker Skill Qualification</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">An operator assigned to a task must hold the certified skill required.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                Skill(W(T<sub>i</sub>)) = RequiredSkill(T<sub>i</sub>)
+            </div>
+        </div>
+    </div>
+
+    <!-- C5 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">5. Machine Working Hours Capacity</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Total scheduled operating hours on any machine cannot exceed daily capacity.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                &sum;<sub>T &isin; Assigned(M)</sub> Duration(T) &le; MaxAvailableHours(M)
+            </div>
+        </div>
+    </div>
+
+    <!-- C6 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">6. Worker Working Hours Limit</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Total assigned task hours for an operator cannot exceed daily shift hours.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                &sum;<sub>T &isin; Assigned(W)</sub> Duration(T) &le; MaxAvailableHours(W)
+            </div>
+        </div>
+    </div>
+
+    <!-- C7 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">7. Raw Material Availability</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Required raw material stock must be sufficient before authorizing production.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                &sum;<sub>T &isin; Scheduled</sub> MaterialDemand(T, R) &le; StockQuantity(R)
+            </div>
+        </div>
+    </div>
+
+    <!-- C8 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">8. Production Delivery Deadline</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Every scheduled task must complete on or before the specified delivery deadline.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                End(T<sub>i</sub>) &le; Deadline(T<sub>i</sub>)
+            </div>
+        </div>
+    </div>
+
+    <!-- C9 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">9. Machine Active Status</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Machines in 'Maintenance' or 'Unavailable' status cannot be assigned.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                Status(M) = "Available"
+            </div>
+        </div>
+    </div>
+
+    <!-- C10 -->
+    <div class="col-md-6">
+        <div class="card content-card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger stat-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold text-dark mb-0">10. Worker Active Status</h6>
+                <span class="badge bg-danger text-light font-monospace small">HARD CONSTRAINT</span>
+            </div>
+            <p class="text-secondary small mb-3">Workers on 'Leave' or 'Unavailable' status cannot be assigned.</p>
+            <div class="font-monospace small bg-light p-2 rounded text-dark border">
+                Status(W) = "Available"
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Constraints Audit Log Table -->
+<div class="card content-card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="fa-solid fa-list-check text-primary me-2"></i>Database Constraints Audit Trail (`constraints_log`)</span>
+        <span class="badge bg-light text-muted border font-monospace small">Verified Records</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Schedule Task ID</th>
+                        <th>Constraint Rule Name</th>
+                        <th>Audit Result</th>
+                        <th>Formal Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if logs %}
+                        {% for log in logs %}
+                        <tr>
+                            <td class="font-monospace text-primary fw-bold">#{{ log.schedule_id }}</td>
+                            <td><strong class="text-dark">{{ log.constraint_name }}</strong></td>
+                            <td>
+                                {% if log.result == 'PASS' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace">
+                                        <i class="fa-solid fa-check me-1"></i>PASS
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-monospace">
+                                        <i class="fa-solid fa-xmark me-1"></i>FAIL
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="small text-secondary">{{ log.explanation }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-clipboard-check fs-2 mb-2 d-block opacity-50"></i>
+                                <h6>No constraint audit logs recorded yet</h6>
+                                <p class="small">Click <strong>Generate Plan</strong> to populate the live audit trail.</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

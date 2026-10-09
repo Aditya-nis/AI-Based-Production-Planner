@@ -1,0 +1,15 @@
+services:
+  ai-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_production_planner
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=ai-csp-production-planner-secret-key-2026
+    volumes:
+      # Persist SQLite database across container restarts
+      - ./database:/app/database

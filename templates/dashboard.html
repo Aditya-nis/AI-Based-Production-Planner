@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | AI-Based Production & Resource Planning{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 tracking-tight">Production Operations Dashboard</h3>
+        <p class="text-secondary small mb-0">Real-time factory metrics, resource utilization, and CSP scheduling state</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('planner.planner_view') }}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>AI Planner</span>
+        </a>
+        <a href="{{ url_for('planner.schedule_view') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-calendar"></i>
+            <span>View Schedule</span>
+        </a>
+    </div>
+</div>
+
+<!-- Key Stat Cards (8 requested cards with modern styling) -->
+<div class="row g-3 mb-4">
+    <!-- 1. Total Products -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Products</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-dark">{{ total_products }}</h2>
+                </div>
+                <div class="stat-icon bg-primary-subtle text-primary shadow-sm">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-cubes text-secondary"></i> Registered product lines
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Total Machines -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Machines</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-dark">{{ total_machines }}</h2>
+                </div>
+                <div class="stat-icon bg-info-subtle text-info shadow-sm">
+                    <i class="fa-solid fa-gears"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-industry text-secondary"></i> Production rigs active
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Total Workers -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Workers</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-dark">{{ total_workers }}</h2>
+                </div>
+                <div class="stat-icon bg-warning-subtle text-warning shadow-sm">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-user-check text-secondary"></i> Qualified staff roster
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Total Tasks -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Tasks</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-dark">{{ total_tasks }}</h2>
+                </div>
+                <div class="stat-icon bg-secondary-subtle text-secondary shadow-sm">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-clipboard-list text-secondary"></i> Batch production units
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Scheduled Tasks -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Scheduled Tasks</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-success">{{ scheduled_tasks }}</h2>
+                </div>
+                <div class="stat-icon bg-success-subtle text-success shadow-sm">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-success small fw-semibold d-flex align-items-center gap-1">
+                <i class="fa-solid fa-circle-dot"></i> Assigned by CSP solver
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Pending Tasks -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Pending Tasks</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-warning">{{ pending_tasks }}</h2>
+                </div>
+                <div class="stat-icon bg-warning-subtle text-warning shadow-sm">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-hourglass-start text-secondary"></i> Awaiting planner run
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Constraint Conflicts -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Conflicts</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-danger">{{ failed_constraints }}</h2>
+                </div>
+                <div class="stat-icon bg-danger-subtle text-danger shadow-sm">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-success small fw-semibold d-flex align-items-center gap-1">
+                <i class="fa-solid fa-check-circle"></i> 0 conflicts in schedule
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. Resource Utilization -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Plant Utilization</div>
+                    <h2 class="fw-bold mb-0 mt-1 text-primary">{{ overall_utilization }}%</h2>
+                </div>
+                <div class="stat-icon bg-primary-subtle text-primary shadow-sm">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+            </div>
+            <div class="mt-2 text-muted small d-flex align-items-center gap-1">
+                <i class="fa-solid fa-gauge-high text-secondary"></i> Average machine load
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Visualizations -->
+<div class="row g-4 mb-4">
+    <!-- Machine Utilization Chart -->
+    <div class="col-lg-7">
+        <div class="card content-card h-100 border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fa-solid fa-chart-column text-primary me-2"></i>Machine Capacity Utilization (%)</span>
+                <span class="badge bg-light text-secondary border font-monospace small">Shift: 8.0 hrs/day</span>
+            </div>
+            <div class="card-body">
+                <canvas id="machineUtilChart" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Distribution Chart -->
+    <div class="col-lg-5">
+        <div class="card content-card h-100 border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fa-solid fa-chart-pie text-info me-2"></i>Product Priority Distribution</span>
+                <span class="badge bg-light text-secondary border font-monospace small">Active Queue</span>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="priorityChart" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Scheduled Tasks Overview -->
+<div class="card content-card mb-4 border-0 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="fa-solid fa-calendar-check text-success me-2"></i>Active Production Schedule Overview</span>
+        <a href="{{ url_for('planner.schedule_view') }}" class="btn btn-sm btn-link text-decoration-none fw-semibold">View Full Schedule &rarr;</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Assigned Machine</th>
+                        <th>Technician</th>
+                        <th>Operating Window</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if schedules %}
+                        {% for s in schedules %}
+                        <tr>
+                            <td>
+                                <strong class="text-dark">{{ s.product.name }}</strong>
+                                <div class="text-muted small font-monospace">{{ s.product.code }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary border">
+                                    <i class="fa-solid fa-gear me-1"></i>{{ s.machine.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info border">
+                                    <i class="fa-solid fa-user me-1"></i>{{ s.worker.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border font-monospace px-2 py-1">
+                                    <i class="fa-regular fa-clock me-1 text-muted"></i>{{ s.start_time }} – {{ s.end_time }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-priority-{{ s.product.priority.lower() }}">
+                                    {{ s.product.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-status-scheduled">
+                                    <i class="fa-solid fa-check me-1"></i>{{ s.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-calendar-xmark fs-2 mb-2 d-block text-secondary opacity-50"></i>
+                                <h6>No active schedule generated yet</h6>
+                                <p class="small">Click <strong>Generate Plan</strong> to run the CSP solver.</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Machine Utilization Bar Chart with Modern Gradient styling
+    const machLabels = [{% for m_name in machine_utilization.keys() %}'{{ m_name }}',{% endfor %}];
+    const machData = [{% for item in machine_utilization.values() %}{{ item.percentage }},{% endfor %}];
+
+    const ctxMach = document.getElementById('machineUtilChart').getContext('2d');
+    const machGradient = ctxMach.createLinearGradient(0, 0, 0, 220);
+    machGradient.addColorStop(0, 'rgba(79, 70, 229, 0.9)');
+    machGradient.addColorStop(1, 'rgba(6, 182, 212, 0.6)');
+
+    new Chart(ctxMach, {
+        type: 'bar',
+        data: {
+            labels: machLabels,
+            datasets: [{
+                label: 'Utilization %',
+                data: machData,
+                backgroundColor: machGradient,
+                borderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 1,
+                borderRadius: 8,
+                barThickness: 28
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                    ticks: { callback: v => v + '%' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Priority Doughnut Chart
+    const ctxPrio = document.getElementById('priorityChart').getContext('2d');
+    new Chart(ctxPrio, {
+        type: 'doughnut',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                data: [{{ priority_counts['High'] }}, {{ priority_counts['Medium'] }}, {{ priority_counts['Low'] }}],
+                backgroundColor: ['#ef4444', '#f59e0b', '#06b6d4'],
+                hoverOffset: 4,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans' } } }
+            }
+        }
+    });
+</script>
+{% endblock %}

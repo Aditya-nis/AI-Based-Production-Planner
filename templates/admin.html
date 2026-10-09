@@ -1,0 +1,633 @@
+{% extends "base.html" %}
+
+{% block title %}Site Administration | Enterprise Security & Credentials{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Top Enterprise Admin Banner -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg position-relative overflow-hidden" 
+                 style="background: radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.15) 0%, transparent 50%), linear-gradient(135deg, #092c1e 0%, #111827 50%, #1e1b4b 100%); border-left: 5px solid #10b981 !important; border-radius: 1.25rem;">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1 rounded-pill">
+                                    <i class="fa-solid fa-shield-halved me-1"></i> Site Administration
+                                </span>
+                                <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-50 px-3 py-1 rounded-pill">
+                                    <i class="fa-solid fa-fingerprint me-1"></i> Enterprise RBAC
+                                </span>
+                                <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-1 rounded-pill">
+                                    <i class="fa-solid fa-lock me-1"></i> PBKDF2/SHA-256 Hashing
+                                </span>
+                            </div>
+                            <h2 class="fw-bold text-white mb-2">Admin Portal & Credential Console</h2>
+                            <p class="text-light text-opacity-75 mb-0" style="max-width: 660px; line-height: 1.6;">
+                                Manage production access, securely update administrative login credentials, provision internal operators, and monitor factory system integrity.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end">
+                            <div class="p-3 rounded-4 bg-black bg-opacity-40 border border-secondary border-opacity-25 d-inline-block text-start shadow-sm" style="min-width: 260px;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="stat-icon text-white rounded-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #06b6d4);">
+                                        <i class="fa-solid fa-user-shield fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Superuser Account</div>
+                                        <div class="text-white fw-bold fs-5 font-monospace text-truncate">{{ current_admin.username }}</div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between text-secondary small" style="font-size: 0.75rem;">
+                                    <span>Last Login:</span>
+                                    <span class="text-info fw-semibold">{{ current_admin.last_login.strftime('%H:%M, %d %b') if current_admin.last_login else 'Active Session' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Telemetry Quick Stats Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #6366f1 !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Admins</span>
+                    <i class="fa-solid fa-users text-primary"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.user_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">System Users</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #06b6d4 !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Products</span>
+                    <i class="fa-solid fa-box text-info"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.product_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">Active Orders</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #f59e0b !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Machines</span>
+                    <i class="fa-solid fa-gears text-warning"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.machine_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">Factory Units</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #10b981 !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Workers</span>
+                    <i class="fa-solid fa-users-gear text-success"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.worker_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">Certified Staff</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #ef4444 !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Materials</span>
+                    <i class="fa-solid fa-cubes text-danger"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.material_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">Inventory Items</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 bg-dark bg-opacity-60 p-3 rounded-3 border-secondary border-opacity-25 shadow-sm h-100" style="border-top: 3px solid #3b82f6 !important;">
+                <div class="text-secondary small d-flex justify-content-between align-items-center mb-1">
+                    <span>Schedules</span>
+                    <i class="fa-solid fa-calendar-check text-primary"></i>
+                </div>
+                <div class="fs-4 fw-bold text-white">{{ stats.schedule_count }}</div>
+                <div class="text-muted small" style="font-size: 0.7rem;">AI Dispatches</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 gap-2" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active px-4 py-2 rounded-pill fw-semibold d-flex align-items-center gap-2" 
+                    id="credentials-tab" data-bs-toggle="pill" data-bs-target="#tab-credentials" type="button" role="tab" aria-selected="true">
+                <i class="fa-solid fa-key"></i>
+                <span>Credential Security & Password</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link px-4 py-2 rounded-pill fw-semibold d-flex align-items-center gap-2" 
+                    id="users-tab" data-bs-toggle="pill" data-bs-target="#tab-users" type="button" role="tab" aria-selected="false">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Administrators & Users ({{ users|length }})</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link px-4 py-2 rounded-pill fw-semibold d-flex align-items-center gap-2" 
+                    id="security-tab" data-bs-toggle="pill" data-bs-target="#tab-security" type="button" role="tab" aria-selected="false">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Security & Encryption Audit</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="adminTabsContent">
+        <!-- TAB 1: CREDENTIAL SECURITY -->
+        <div class="tab-pane fade show active" id="tab-credentials" role="tabpanel">
+            <div class="row g-4">
+                <!-- Left: Credential Update Form -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm h-100" style="background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 1.25rem;">
+                        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="stat-icon bg-primary bg-opacity-25 text-info rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                                    <i class="fa-solid fa-lock-open fs-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-white mb-0">Change Login Credentials</h5>
+                                    <div class="text-secondary small">Update your username or generate a new secure password</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill">
+                                Active Admin
+                            </span>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+                            <form method="POST" action="{{ url_for('admin.update_credentials') }}" id="credentialForm" autocomplete="off">
+                                <!-- Username Field -->
+                                <div class="mb-4">
+                                    <label class="form-label text-light fw-semibold small d-flex justify-content-between">
+                                        <span><i class="fa-solid fa-user text-primary me-2"></i>Administrator Username</span>
+                                        <span class="text-secondary small font-monospace">Current: {{ current_admin.username }}</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-black border-secondary border-opacity-50 text-secondary">
+                                            <i class="fa-solid fa-at"></i>
+                                        </span>
+                                        <input type="text" name="username" class="form-control bg-dark text-white border-secondary border-opacity-50" 
+                                               value="{{ current_admin.username }}" required>
+                                    </div>
+                                    <div class="form-text text-secondary small mt-1">This username will be required to authenticate into the factory system.</div>
+                                </div>
+
+                                <!-- Current Password (Mandatory for Security) -->
+                                <div class="mb-4">
+                                    <label class="form-label text-light fw-semibold small">
+                                        <i class="fa-solid fa-shield-halved text-warning me-2"></i>Current Password <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-black border-secondary border-opacity-50 text-secondary">
+                                            <i class="fa-solid fa-key"></i>
+                                        </span>
+                                        <input type="password" name="current_password" id="currPasswordInput" class="form-control bg-dark text-white border-secondary border-opacity-50" 
+                                               placeholder="Enter current password to authorize changes" required>
+                                        <button class="btn btn-outline-secondary border-secondary border-opacity-50" type="button" onclick="togglePassVisibility('currPasswordInput', this)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text text-secondary small mt-1">Mandatory verification to prevent unauthorized credential tampering.</div>
+                                </div>
+
+                                <div class="p-3 my-4 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25">
+                                    <div class="text-info fw-semibold small mb-1">
+                                        <i class="fa-solid fa-circle-info me-1"></i> New Password Settings
+                                    </div>
+                                    <div class="text-secondary small">Leave the fields below empty if you only wish to change your username.</div>
+                                </div>
+
+                                <!-- New Password -->
+                                <div class="mb-3">
+                                    <label class="form-label text-light fw-semibold small">
+                                        <i class="fa-solid fa-lock text-info me-2"></i>New Password
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-black border-secondary border-opacity-50 text-secondary">
+                                            <i class="fa-solid fa-key-skeleton"></i>
+                                        </span>
+                                        <input type="password" name="new_password" id="newPasswordInput" class="form-control bg-dark text-white border-secondary border-opacity-50" 
+                                               placeholder="Minimum 4 characters (8+ recommended)">
+                                        <button class="btn btn-outline-secondary border-secondary border-opacity-50" type="button" onclick="togglePassVisibility('newPasswordInput', this)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Interactive Password Strength Meter -->
+                                    <div class="mt-2">
+                                        <div class="d-flex justify-content-between align-items-center small mb-1" style="font-size: 0.75rem;">
+                                            <span class="text-secondary">Password Strength:</span>
+                                            <span id="strengthLabel" class="fw-bold text-muted">Not evaluated</span>
+                                        </div>
+                                        <div class="progress bg-black bg-opacity-50" style="height: 6px; border-radius: 4px;">
+                                            <div id="strengthProgressBar" class="progress-bar transition-all" role="progressbar" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Confirm New Password -->
+                                <div class="mb-4">
+                                    <label class="form-label text-light fw-semibold small">
+                                        <i class="fa-solid fa-check-double text-info me-2"></i>Confirm New Password
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-black border-secondary border-opacity-50 text-secondary">
+                                            <i class="fa-solid fa-repeat"></i>
+                                        </span>
+                                        <input type="password" name="confirm_password" id="confirmPasswordInput" class="form-control bg-dark text-white border-secondary border-opacity-50" 
+                                               placeholder="Re-enter new password">
+                                        <button class="btn btn-outline-secondary border-secondary border-opacity-50" type="button" onclick="togglePassVisibility('confirmPasswordInput', this)">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div id="passwordMatchBadge" class="small mt-1 d-none"></div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-flex justify-content-end gap-2 pt-3 border-top border-secondary border-opacity-25">
+                                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 d-flex align-items-center gap-2 shadow">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        <span>Save Security Credentials</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Security Policies & Best Practices Guide -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm mb-4" style="background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 1.25rem;">
+                        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-shield-virus text-success"></i> Credential Security Policies
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                                <li class="d-flex gap-3">
+                                    <div class="stat-icon bg-success bg-opacity-20 text-success rounded-3 p-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold small">Zero Plaintext Storage</div>
+                                        <div class="text-secondary small">Passwords are never saved in plaintext; they are transformed via irreversible cryptographic one-way hashes.</div>
+                                    </div>
+                                </li>
+                                <li class="d-flex gap-3">
+                                    <div class="stat-icon bg-info bg-opacity-20 text-info rounded-3 p-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold small">Salted Hashes with Scrypt/PBKDF2</div>
+                                        <div class="text-secondary small">Every password utilizes a random unique salt to prevent rainbow table and dictionary attacks.</div>
+                                    </div>
+                                </li>
+                                <li class="d-flex gap-3">
+                                    <div class="stat-icon bg-warning bg-opacity-20 text-warning rounded-3 p-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-ban"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold small">No Public Registration</div>
+                                        <div class="text-secondary small">Public visitor registration is strictly turned off. Only logged-in administrators can create operators.</div>
+                                    </div>
+                                </li>
+                                <li class="d-flex gap-3">
+                                    <div class="stat-icon bg-primary bg-opacity-20 text-primary rounded-3 p-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold small">Active Session Regeneration</div>
+                                        <div class="text-secondary small">Updating credentials updates active session metadata immediately without session hijacking risk.</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Quick Admin Tips Card -->
+                    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1px solid rgba(99, 102, 241, 0.25) !important; border-radius: 1.25rem;">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center gap-2 text-info fw-bold small mb-2">
+                                <i class="fa-solid fa-lightbulb"></i> Recommended Best Practice
+                            </div>
+                            <p class="text-light text-opacity-75 small mb-0">
+                                When deploying publicly to Vercel or production hosting, change the default <code class="text-warning">admin123</code> password immediately to a strong custom passphrase with letters, numbers, and symbols.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ADMINISTRATORS & USERS -->
+        <div class="tab-pane fade" id="tab-users" role="tabpanel">
+            <div class="card border-0 shadow-sm" style="background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 1.25rem;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-success bg-opacity-25 text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            <i class="fa-solid fa-users fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-white mb-0">Authorized Users & Operators</h5>
+                            <div class="text-secondary small">Manage authorized personnel with access to the factory scheduler</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary d-flex align-items-center gap-2 rounded-3 px-3 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Provision New Administrator</span>
+                    </button>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                            <thead>
+                                <tr class="border-secondary border-opacity-25 text-secondary small text-uppercase font-monospace">
+                                    <th>User ID</th>
+                                    <th>Administrator</th>
+                                    <th>Role</th>
+                                    <th>Account Created</th>
+                                    <th>Last Activity</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in users %}
+                                <tr class="border-secondary border-opacity-25">
+                                    <td class="text-muted font-monospace">#{{ "%03d"|format(u.id) }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="stat-icon rounded-circle d-flex align-items-center justify-content-center text-white" 
+                                                 style="width: 36px; height: 36px; background: linear-gradient(135deg, #4f46e5, #06b6d4); font-size: 0.85rem;">
+                                                {{ u.username[0]|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="text-white fw-bold d-flex align-items-center gap-2">
+                                                    <span>{{ u.username }}</span>
+                                                    {% if u.id == current_admin.id %}
+                                                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">You</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-muted small" style="font-size: 0.72rem;">Authentication Subject</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if u.role == 'admin' %}
+                                            <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 px-2 py-1 rounded-pill">
+                                                <i class="fa-solid fa-shield-halved me-1"></i> Admin (Superuser)
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary bg-opacity-25 text-light px-2 py-1 rounded-pill">
+                                                <i class="fa-solid fa-user-tie me-1"></i> Manager
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-secondary small font-monospace">
+                                        {{ u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else 'System Init' }}
+                                    </td>
+                                    <td class="text-secondary small">
+                                        {% if u.last_login %}
+                                            <span class="text-info font-monospace">{{ u.last_login.strftime('%Y-%m-%d %H:%M') }}</span>
+                                        {% else %}
+                                            <span class="text-muted fst-italic">Pending first login</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% if u.id != current_admin.id and users|length > 1 %}
+                                        <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" class="d-inline"
+                                              onsubmit="return confirm('Confirm deletion of operator account {{ u.username }}? This cannot be undone.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 rounded-2" title="Delete operator account">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-dark text-muted py-1 px-2 border-0" disabled title="Protected active admin">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SECURITY & ENCRYPTION AUDIT -->
+        <div class="tab-pane fade" id="tab-security" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100" style="background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 1.25rem;">
+                        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-success"></i> Security Architecture Audit
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3 p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-secondary small">Global Route Guard</span>
+                                    <span class="badge bg-success bg-opacity-25 text-success">Active</span>
+                                </div>
+                                <div class="text-light small">
+                                    Every endpoint except <code>/login</code> and <code>/static</code> redirects unauthenticated visitors immediately.
+                                </div>
+                            </div>
+
+                            <div class="mb-3 p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-secondary small">Public Signup Policy</span>
+                                    <span class="badge bg-danger bg-opacity-25 text-danger">Strictly Disabled</span>
+                                </div>
+                                <div class="text-light small">
+                                    Self-registration routes do not exist. Prevents malicious account creation when deployed on public clouds.
+                                </div>
+                            </div>
+
+                            <div class="mb-0 p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-secondary small">Cryptographic Hash Engine</span>
+                                    <span class="badge bg-primary bg-opacity-25 text-info">PBKDF2/SHA-256</span>
+                                </div>
+                                <div class="text-light small">
+                                    Integrated with <code>werkzeug.security</code> with random per-user salt.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100" style="background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 1.25rem;">
+                        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-server text-info"></i> Active Session Telemetry
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <ul class="list-group list-group-flush bg-transparent">
+                                <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-light d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-secondary small">Session User</span>
+                                    <span class="font-monospace text-white fw-bold">{{ current_admin.username }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-light d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-secondary small">Access Level</span>
+                                    <span class="badge bg-primary bg-opacity-25 text-info text-capitalize">{{ current_admin.role }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-light d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-secondary small">Session State</span>
+                                    <span class="text-success small fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> Authenticated</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-light d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-secondary small">Storage Engine</span>
+                                    <span class="text-light small">SQLite 3 (ACID Compliant)</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 text-light d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-secondary small">Total Enforced Constraints</span>
+                                    <span class="badge bg-warning bg-opacity-25 text-warning">10 Hard Constraints</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add New Admin User -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary border-opacity-50 text-white" style="border-radius: 1.25rem;">
+            <div class="modal-header border-secondary border-opacity-25 p-4">
+                <h5 class="modal-title d-flex align-items-center gap-2" id="addUserModalLabel">
+                    <i class="fa-solid fa-user-plus text-info"></i> Provision System Administrator
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.create_user') }}" autocomplete="off">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-light small fw-semibold">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" class="form-control bg-black text-white border-secondary" required placeholder="e.g. factory_supervisor">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light small fw-semibold">Temporary Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password" class="form-control bg-black text-white border-secondary" required placeholder="Minimum 4 characters">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light small fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                        <input type="password" name="confirm_password" class="form-control bg-black text-white border-secondary" required placeholder="Repeat temporary password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light small fw-semibold">System Role</label>
+                        <select name="role" class="form-select bg-black text-white border-secondary">
+                            <option value="admin">Admin (Full Control & Credential Manager)</option>
+                            <option value="manager">Manager (Production Supervisor)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25 p-3">
+                    <button type="button" class="btn btn-secondary px-3 py-2 rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-3">Provision Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle Password Visibility
+    function togglePassVisibility(inputId, buttonEl) {
+        const input = document.getElementById(inputId);
+        const icon = buttonEl.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Interactive Password Strength Evaluation
+    const newPassInput = document.getElementById('newPasswordInput');
+    const strengthBar = document.getElementById('strengthProgressBar');
+    const strengthLabel = document.getElementById('strengthLabel');
+    const confirmPassInput = document.getElementById('confirmPasswordInput');
+    const matchBadge = document.getElementById('passwordMatchBadge');
+
+    if (newPassInput) {
+        newPassInput.addEventListener('input', function() {
+            const val = this.value;
+            let score = 0;
+            if (val.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthLabel.textContent = 'Not evaluated';
+                strengthLabel.className = 'fw-bold text-muted';
+                return;
+            }
+            if (val.length >= 4) score += 25;
+            if (val.length >= 8) score += 25;
+            if (/[0-9]/.test(val)) score += 25;
+            if (/[^A-Za-z0-9]/.test(val)) score += 25;
+
+            strengthBar.style.width = score + '%';
+            if (score <= 25) {
+                strengthBar.className = 'progress-bar bg-danger';
+                strengthLabel.textContent = 'Weak';
+                strengthLabel.className = 'fw-bold text-danger';
+            } else if (score <= 50) {
+                strengthBar.className = 'progress-bar bg-warning';
+                strengthLabel.textContent = 'Fair';
+                strengthLabel.className = 'fw-bold text-warning';
+            } else if (score <= 75) {
+                strengthBar.className = 'progress-bar bg-info';
+                strengthLabel.textContent = 'Good';
+                strengthLabel.className = 'fw-bold text-info';
+            } else {
+                strengthBar.className = 'progress-bar bg-success';
+                strengthLabel.textContent = 'Strong (Excellent)';
+                strengthLabel.className = 'fw-bold text-success';
+            }
+            checkPasswordMatch();
+        });
+    }
+
+    if (confirmPassInput) {
+        confirmPassInput.addEventListener('input', checkPasswordMatch);
+    }
+
+    function checkPasswordMatch() {
+        if (!confirmPassInput || !newPassInput) return;
+        const p1 = newPassInput.value;
+        const p2 = confirmPassInput.value;
+        if (p2.length === 0) {
+            matchBadge.className = 'small mt-1 d-none';
+            return;
+        }
+        matchBadge.classList.remove('d-none');
+        if (p1 === p2) {
+            matchBadge.className = 'small mt-1 text-success fw-semibold';
+            matchBadge.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Passwords match perfectly';
+        } else {
+            matchBadge.className = 'small mt-1 text-danger fw-semibold';
+            matchBadge.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Passwords do not match';
+        }
+    }
+</script>
+{% endblock %}

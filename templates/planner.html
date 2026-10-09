@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}AI Production Planner | CSP Engine{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h3 class="fw-bold mb-0 tracking-tight">AI Production Planner</h3>
+            <span class="badge bg-primary text-white font-monospace small px-2 py-1">CSP Solver</span>
+        </div>
+        <p class="text-secondary small mb-0">Constraint Satisfaction Problem automated reasoning and conflict-free scheduling engine</p>
+    </div>
+    <div class="d-flex gap-2">
+        <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form">
+            <button type="submit" class="btn btn-primary btn-lg shadow d-flex align-items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Generate Production Plan</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- AI Solver Trigger Banner with Futuristic Mesh & Parameter Chips -->
+<div class="card content-card mb-4 p-4 p-md-5 border-0 shadow-sm position-relative overflow-hidden" 
+     style="background: linear-gradient(135deg, #0b1120 0%, #172554 100%); color: #ffffff; border-radius: 16px;">
+    
+    <div style="position: absolute; right: -50px; bottom: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%); pointer-events: none;"></div>
+
+    <div class="row align-items-center position-relative">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="live-pulse-dot"></span>
+                <span class="text-info fw-bold text-uppercase font-monospace" style="font-size: 0.75rem; letter-spacing: 0.1em;">
+                    Autonomous Scheduling Algorithm
+                </span>
+            </div>
+            <h3 class="fw-bold text-white mb-2 tracking-tight">Constraint Satisfaction Problem (CSP) Engine</h3>
+            <p class="text-light text-opacity-75 mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                Click <strong>"Run CSP Solver"</strong> to execute the full pipeline: extracting live shopfloor orders, 
+                generating discrete Cartesian domain tuples <code>(Machine, Worker, Time Window)</code>, and executing 
+                <strong>Recursive Backtracking Search</strong> with <strong>MRV Heuristic</strong> and <strong>Forward Checking</strong>.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-dark bg-opacity-75 border border-secondary border-opacity-50 text-light px-3 py-2 font-monospace">
+                    <i class="fa-solid fa-box text-primary me-1"></i>{{ products|length }} Products
+                </span>
+                <span class="badge bg-dark bg-opacity-75 border border-secondary border-opacity-50 text-light px-3 py-2 font-monospace">
+                    <i class="fa-solid fa-gears text-info me-1"></i>{{ machines|length }} Machines
+                </span>
+                <span class="badge bg-dark bg-opacity-75 border border-secondary border-opacity-50 text-light px-3 py-2 font-monospace">
+                    <i class="fa-solid fa-users-gear text-warning me-1"></i>{{ workers|length }} Workers
+                </span>
+                <span class="badge bg-dark bg-opacity-75 border border-secondary border-opacity-50 text-light px-3 py-2 font-monospace">
+                    <i class="fa-solid fa-cubes text-success me-1"></i>{{ materials|length }} Raw Materials
+                </span>
+                <span class="badge bg-dark bg-opacity-75 border border-secondary border-opacity-50 text-light px-3 py-2 font-monospace">
+                    <i class="fa-solid fa-lock text-danger me-1"></i>10 Hard Constraints
+                </span>
+            </div>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+            <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form">
+                <button type="submit" class="btn btn-primary px-4 py-3 fw-bold fs-6 w-100 shadow-lg d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Run CSP Solver Now</span>
+                </button>
+            </form>
+            <div class="text-light text-opacity-50 small mt-2 text-center font-monospace" style="font-size: 0.75rem;">
+                Guarantees zero overlap &amp; 100% constraint compliance
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if latest_ai.executed %}
+    {% if latest_ai.success %}
+        <!-- Success Notification Banner -->
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center p-3 mb-4 rounded-3" role="alert">
+            <div class="stat-icon bg-success text-white me-3 shadow-sm" style="width: 44px; height: 44px; border-radius: 10px;">
+                <i class="fa-solid fa-check fs-5"></i>
+            </div>
+            <div>
+                <h6 class="alert-heading fw-bold mb-1">Production Plan Successfully Synthesized!</h6>
+                <div class="small">{{ latest_ai.message }} Conflict-free assignments generated and persisted into SQLite database.</div>
+            </div>
+            <a href="{{ url_for('planner.schedule_view') }}" class="btn btn-sm btn-success ms-auto d-flex align-items-center gap-1">
+                <i class="fa-solid fa-calendar"></i>
+                <span>View Full Schedule</span>
+            </a>
+        </div>
+
+        <!-- Real CSP Solver Statistics Grid (Requirement 20) -->
+        <div class="card content-card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark"><i class="fa-solid fa-chart-simple text-primary me-2"></i>Live CSP Solver Execution Statistics</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace px-3 py-1">
+                    <i class="fa-solid fa-circle-check me-1"></i>Solution Found: YES
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3 text-center">
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">VARIABLES (N)</div>
+                            <h2 class="fw-bold mb-0 text-dark mt-1">{{ latest_ai.statistics.variables_count }}</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">Production Tasks</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">DOMAIN SPACE</div>
+                            <h2 class="fw-bold mb-0 text-primary mt-1">{{ latest_ai.statistics.initial_domain_size }}</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">Total Tuples</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">ASSIGNMENTS TRIED</div>
+                            <h2 class="fw-bold mb-0 text-info mt-1">{{ latest_ai.statistics.assignments_tried }}</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">States Explored</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">BACKTRACKS</div>
+                            <h2 class="fw-bold mb-0 text-warning mt-1">{{ latest_ai.statistics.backtracks }}</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">Pruned Branches</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">CONSTRAINTS CHECKED</div>
+                            <h2 class="fw-bold mb-0 text-secondary mt-1">{{ latest_ai.statistics.constraints_checked }}</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">Logical Checks</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="stat-metric-box">
+                            <div class="text-muted small fw-bold font-monospace" style="font-size: 0.72rem;">SOLVE TIME</div>
+                            <h2 class="fw-bold mb-0 text-success mt-1">{{ latest_ai.statistics.execution_time_ms }} ms</h2>
+                            <div class="small text-secondary" style="font-size: 0.75rem;">Fast Convergence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Decision Justifications (Requirement 20) -->
+        <div class="card content-card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark"><i class="fa-solid fa-brain text-primary me-2"></i>Explainable AI: Decision Justification Cards</span>
+                <span class="badge bg-light text-muted border font-monospace small">Transparent Reasoning</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    {% for exp in latest_ai.explanations %}
+                    <div class="col-md-6">
+                        <div class="decision-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold text-dark mb-0">{{ exp.task_name }}</h6>
+                                <span class="badge bg-primary-subtle text-primary font-monospace">{{ exp.time_slot }}</span>
+                            </div>
+                            <div class="small text-muted mb-3 d-flex align-items-center gap-2">
+                                <span><i class="fa-solid fa-gear text-secondary me-1"></i><strong>{{ exp.assigned_machine }}</strong></span>
+                                &bull;
+                                <span><i class="fa-solid fa-user text-secondary me-1"></i><strong>{{ exp.assigned_worker }}</strong></span>
+                            </div>
+                            <ul class="list-unstyled mb-0 small text-secondary">
+                                {% for reason in exp.reasons %}
+                                <li class="mb-1 d-flex align-items-start gap-2">
+                                    <i class="fa-solid fa-circle-check text-success mt-1" style="font-size: 0.8rem;"></i>
+                                    <span>{{ reason }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Failure & Conflict Diagnostics Card (Requirement 15) -->
+        <div class="card content-card mb-4 border-0 shadow-sm border-start border-4 border-danger">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Production plan could not be generated</span>
+                <span class="badge bg-white text-danger font-monospace">CSP UNSATISFIABLE</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h5 class="fw-bold text-danger mb-2">Conflicting Constraints Detected</h5>
+                    <p class="text-secondary small mb-3">
+                        The AI search engine exhausted all search branches because one or more hard physical constraints cannot be simultaneously satisfied:
+                    </p>
+                    <div class="list-group">
+                        {% for conflict in latest_ai.diagnostics.conflicting_constraints %}
+                        <div class="list-group-item list-group-item-danger border-0 mb-1 rounded d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-xmark text-danger"></i>
+                            <span class="small fw-semibold">{{ conflict }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="p-3 bg-warning-subtle border border-warning-subtle rounded-3">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-lightbulb text-warning me-2"></i>AI Recommended Remediation:</h6>
+                    <ul class="mb-2 ps-3 small text-dark">
+                        {% for sug in latest_ai.diagnostics.suggestions %}
+                        <li>{{ sug }}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="small text-muted mt-2">
+                        <em>Suggestion: Try increasing machine availability, clearing maintenance status, adding an operator, or relaxing deadlines.</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Sleek Terminal Backtracking Trace Console -->
+    <div class="terminal-console mb-4">
+        <div class="terminal-header">
+            <div class="terminal-dots">
+                <div class="terminal-dot dot-red"></div>
+                <div class="terminal-dot dot-yellow"></div>
+                <div class="terminal-dot dot-green"></div>
+            </div>
+            <div class="small text-muted font-monospace" style="font-size: 0.75rem;">backtracking_search_trace.log</div>
+            <div><i class="fa-solid fa-terminal text-muted" style="font-size: 0.8rem;"></i></div>
+        </div>
+        <div class="p-3 small" style="max-height: 220px; overflow-y: auto;">
+            {% for log in latest_ai.search_log %}
+                <div class="text-info mb-1">&gt; {{ log }}</div>
+            {% endfor %}
+            <div class="border-top border-secondary border-opacity-25 my-2"></div>
+            {% for step in latest_ai.trace %}
+                <div class="text-light text-opacity-75 mb-1">&bull; {{ step }}</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+<!-- Resource Inventory Status Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card content-card h-100 border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fa-solid fa-box text-primary me-2"></i>Work Orders Pending Planning</span>
+                <a href="{{ url_for('products.list_products') }}" class="small text-decoration-none fw-semibold">Manage &rarr;</a>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush small">
+                    {% for p in products %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div>
+                            <strong class="text-dark">{{ p.name }}</strong> ({{ p.quantity }} unit &bull; {{ p.production_time }}h)
+                            <div class="text-muted" style="font-size: 0.8rem;">Required Machine: {{ p.machine_type }} &bull; Deadline: {{ p.deadline }}</div>
+                        </div>
+                        <span class="badge badge-priority-{{ p.priority.lower() }}">{{ p.priority }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card content-card h-100 border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="fa-solid fa-industry text-info me-2"></i>Active Resource Pool</span>
+                <span class="badge bg-light text-muted border font-monospace small">Live State</span>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush small">
+                    {% for m in machines %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div>
+                            <i class="fa-solid fa-gear me-2 text-secondary"></i><strong class="text-dark">{{ m.name }}</strong> ({{ m.machine_type }})
+                            <span class="text-muted ms-2">{{ m.available_hours }}h shift</span>
+                        </div>
+                        <span class="badge badge-status-{{ m.status.lower() }}">{{ m.status }}</span>
+                    </li>
+                    {% endfor %}
+                    {% for w in workers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div>
+                            <i class="fa-solid fa-user me-2 text-secondary"></i><strong class="text-dark">{{ w.name }}</strong> (Skill: {{ w.skill }})
+                            <span class="text-muted ms-2">{{ w.available_hours }}h shift</span>
+                        </div>
+                        <span class="badge badge-status-{{ w.status.lower() }}">{{ w.status }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Access Portal | AI Production Planning CSP</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            --login-primary: #6366f1;
+            --login-primary-dark: #4f46e5;
+            --login-accent: #06b6d4;
+            --login-bg: #030712;
+            --login-surface: rgba(15, 23, 42, 0.75);
+            --login-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body.login-page-body {
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--login-bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.14) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(30, 27, 75, 0.6) 0px, transparent 65%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            color: #f1f5f9;
+        }
+
+        /* Ambient Background Orbs */
+        .ambient-glow-1 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+            bottom: -80px;
+            right: -80px;
+            border-radius: 50%;
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Main Master Container */
+        .master-auth-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1020px;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.75rem;
+            box-shadow: 
+                0 25px 60px -15px rgba(0, 0, 0, 0.7),
+                0 0 45px rgba(99, 102, 241, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .master-auth-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Left Showcase Column */
+        .auth-brand-showcase {
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3.25rem 2.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .auth-brand-showcase::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .brand-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.65rem;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.45);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.85rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.25s ease;
+        }
+
+        .feature-item-pill:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.35);
+            transform: translateX(4px);
+        }
+
+        .feature-pill-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Right Form Column */
+        .auth-form-column {
+            padding: 3.25rem 2.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(11, 17, 32, 0.4);
+        }
+
+        .form-floating > .form-control {
+            background: rgba(15, 23, 42, 0.75) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: #f8fafc !important;
+            border-radius: 0.85rem;
+            padding-left: 2.85rem;
+            font-size: 0.95rem;
+            height: calc(3.5rem + 2px);
+            transition: all 0.2s ease;
+        }
+
+        .form-floating > .form-control:focus {
+            background: rgba(15, 23, 42, 0.95) !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+        }
+
+        .form-floating > label {
+            padding-left: 2.85rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .input-lead-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            z-index: 5;
+            pointer-events: none;
+            font-size: 1.05rem;
+            transition: color 0.2s;
+        }
+
+        .form-floating:focus-within .input-lead-icon {
+            color: #818cf8;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 0.5rem;
+            z-index: 6;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-radius: 0.5rem;
+        }
+
+        .password-toggle-btn:hover {
+            color: #e2e8f0;
+        }
+
+        .auth-submit-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            border: none;
+            color: white;
+            padding: 0.95rem 1.75rem;
+            font-weight: 600;
+            border-radius: 0.85rem;
+            letter-spacing: 0.2px;
+            font-size: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .auth-submit-btn:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px -5px rgba(79, 70, 229, 0.6);
+            color: white;
+        }
+
+        .auth-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .security-audit-seal {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            font-size: 0.72rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+        }
+
+        .live-status-dot-green {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        @media (max-width: 991.98px) {
+            .auth-brand-showcase {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 2.25rem 1.75rem;
+            }
+            .auth-form-column {
+                padding: 2.25rem 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="login-page-body">
+    <!-- Ambient Glow Lights -->
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Master Auth Card -->
+    <div class="master-auth-card">
+        <div class="row g-0">
+            <!-- Left Side: System Showcase -->
+            <div class="col-lg-6 auth-brand-showcase">
+                <div>
+                    <!-- Brand Identity -->
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="brand-icon-wrapper mb-0">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-0">AI Production Planner</h4>
+                            <span class="text-info small fw-medium" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                CONSTRAINT SATISFACTION ENGINE
+                            </span>
+                        </div>
+                    </div>
+
+                    <h3 class="fw-bold text-white mt-4 mb-2" style="line-height: 1.3;">
+                        Automated Factory Scheduling & Resource Balancing
+                    </h3>
+                    <p class="text-secondary small mb-4" style="line-height: 1.6;">
+                        Industrial AI optimization system utilizing recursive backtracking search, Minimum Remaining Values (MRV) heuristic, and real-time constraint verification.
+                    </p>
+
+                    <!-- Feature Pills -->
+                    <div class="mb-4">
+                        <div class="feature-item-pill">
+                            <div class="feature-pill-icon bg-primary bg-opacity-25 text-info">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-semibold small">MRV & Backtracking Search</div>
+                                <div class="text-secondary" style="font-size: 0.75rem;">Optimizes variable ordering with fail-first pruning</div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item-pill">
+                            <div class="feature-pill-icon bg-success bg-opacity-25 text-success">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-semibold small">10 Hard Constraints Verified</div>
+                                <div class="text-secondary" style="font-size: 0.75rem;">Guarantees zero overlap & full technical compliance</div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item-pill">
+                            <div class="feature-pill-icon bg-warning bg-opacity-25 text-warning">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-semibold small">Dynamic Rescheduling</div>
+                                <div class="text-secondary" style="font-size: 0.75rem;">Adapts instantly to machine downtime or staff leave</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Status inside Showcase -->
+                <div class="pt-3 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="live-status-dot-green"></span>
+                        <span class="text-light text-opacity-75 small" style="font-size: 0.75rem;">
+                            Engine Status: <strong>Online</strong>
+                        </span>
+                    </div>
+                    <span class="text-muted small" style="font-size: 0.72rem;">
+                        CSP Framework v2.4
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right Side: Clean Professional Login Form -->
+            <div class="col-lg-6 auth-form-column">
+                <div>
+                    <!-- Header -->
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="security-audit-seal">
+                            <i class="fa-solid fa-lock"></i> Protected Production Workspace
+                        </span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.7rem;">
+                            HTTPS Active
+                        </span>
+                    </div>
+
+                    <h3 class="fw-bold text-white mb-1">Sign In</h3>
+                    <p class="text-secondary small mb-4">
+                        Please enter your administrator credentials to access the production control console.
+                    </p>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border-0 rounded-3 shadow-sm" role="alert" style="font-size: 0.85rem;">
+                                    <i class="fa-solid {% if category == 'success' %}fa-circle-check text-success{% elif category == 'danger' %}fa-circle-exclamation text-danger{% else %}fa-circle-info text-info{% endif %}"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.65rem; padding: 0.75rem;"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Login Form (Only Login, No Signup) -->
+                    <form method="POST" action="{{ url_for('auth.login') }}" autocomplete="off">
+                        <input type="hidden" name="next" value="{{ next }}">
+
+                        <!-- Username Field -->
+                        <div class="form-floating mb-3 position-relative">
+                            <div class="input-lead-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{ username or '' }}" required autofocus>
+                            <label for="username">Username</label>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-floating mb-3 position-relative">
+                            <div class="input-lead-icon">
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            <label for="password">Password</label>
+                            <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+
+                        <!-- Security Notice / Options Row -->
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input bg-dark border-secondary" type="checkbox" id="rememberMe" checked>
+                                <label class="form-check-label text-secondary small" for="rememberMe" style="font-size: 0.8rem;">
+                                    Remember session
+                                </label>
+                            </div>
+                            <span class="text-secondary small" style="font-size: 0.75rem;">
+                                <i class="fa-solid fa-shield-halved text-success me-1"></i> SSL Protected
+                            </span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn auth-submit-btn w-100 d-flex align-items-center justify-content-center gap-2">
+                            <span>Authenticate & Proceed</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- Security Footnote (Default credentials completely removed) -->
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+                        <div class="text-secondary small" style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-fingerprint text-info me-1"></i> Enterprise Role-Based Access Control
+                        </div>
+                        <div class="text-muted small mt-1" style="font-size: 0.7rem;">
+                            Public sign-up is disabled. Contact your system administrator to provision access.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Interactive Password Visibility Toggle
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (toggleBtn && passwordInput && toggleIcon) {
+            toggleBtn.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

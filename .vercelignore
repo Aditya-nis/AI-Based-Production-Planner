@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+venv/
+env/
+.env
+tests/
+database/*.db
+*.log
+scratch/
+.system_generated/
+*.docx
+*.pptx
+generate_documents.py

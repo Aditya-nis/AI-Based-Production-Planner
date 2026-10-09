@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>{% block title %}AI Production Planner | Constraint Satisfaction Problem{% endblock %}</title>
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom Modernized CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- AI Loader Overlay with Futuristic Pulse Ring -->
+    <div id="aiLoaderOverlay" class="ai-loader-overlay">
+        <div class="ai-pulse-ring mb-4">
+            <i class="fa-solid fa-microchip fs-3 text-info"></i>
+        </div>
+        <h4 class="fw-bold tracking-tight mb-2 text-center px-3">AI is generating the optimal production plan...</h4>
+        <p class="text-light opacity-75 small text-center px-3" style="max-width: 500px;">
+            Executing recursive backtracking search with Minimum Remaining Values (MRV) heuristic and evaluating 10 hard constraints...
+        </p>
+    </div>
+
+    <!-- Mobile Offcanvas Sidebar Drawer (Screens < 768px) -->
+    <div class="offcanvas offcanvas-start bg-dark text-white d-md-none sidebar-offcanvas" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel" style="width: 280px; background-color: #0b1120 !important;">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-25 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="stat-icon text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); width: 36px; height: 36px; border-radius: 8px;">
+                    <i class="fa-solid fa-brain fs-6"></i>
+                </div>
+                <div>
+                    <span class="brand-title" style="font-size: 1.05rem;">AI Planner</span>
+                    <div class="brand-subtitle" style="font-size: 0.65rem;">CSP Scheduler</div>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body px-3 py-2 d-flex flex-column justify-content-between">
+            <ul class="nav nav-pills flex-column w-100" id="mobileMenu">
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.home') }}" class="nav-link {% if request.endpoint == 'planner.home' %}active{% endif %}">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.planner_view') }}" class="nav-link text-info fw-bold {% if request.endpoint == 'planner.planner_view' %}active{% endif %}">
+                        <i class="fa-solid fa-microchip"></i>
+                        <span>AI Planner</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.schedule_view') }}" class="nav-link {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Production Schedule</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.utilization_view') }}" class="nav-link {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Resource Utilization</span>
+                    </a>
+                </li>
+
+                <div class="nav-section-title mt-2">Factory Resources</div>
+
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('products.list_products') }}" class="nav-link {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('machines.list_machines') }}" class="nav-link {% if request.endpoint and 'machines' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-gears"></i>
+                        <span>Machines</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('workers.list_workers') }}" class="nav-link {% if request.endpoint and 'workers' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Workers</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('materials.list_materials') }}" class="nav-link {% if request.endpoint and 'materials' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-cubes-stacked"></i>
+                        <span>Raw Materials</span>
+                    </a>
+                </li>
+
+                <div class="nav-section-title mt-2">Academic & Viva</div>
+
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.constraints_view') }}" class="nav-link {% if request.endpoint == 'planner.constraints_view' %}active{% endif %}">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Active Constraints</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('planner.ai_explanation_view') }}" class="nav-link {% if request.endpoint == 'planner.ai_explanation_view' %}active{% endif %}">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>How AI Works</span>
+                    </a>
+                </li>
+
+                <div class="nav-section-title mt-2">Administration</div>
+
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('admin.admin_panel') }}" class="nav-link text-warning fw-semibold {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Admin & Credentials</span>
+                    </a>
+                </li>
+                <li class="nav-item w-100">
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="pt-3 border-top border-secondary border-opacity-25 mt-3">
+                <div class="d-flex align-items-center gap-2 p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                    <span class="live-pulse-dot"></span>
+                    <div class="small text-light text-opacity-75" style="font-size:0.75rem;">
+                        <strong>CSP Solver:</strong> Online
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Wrapper -->
+    <div class="container-fluid p-0">
+        <div class="row g-0 flex-nowrap">
+            <!-- Persistent Desktop Sidebar (Screens >= 768px) -->
+            <div class="col-md-3 col-xl-2 px-0 sidebar d-none d-md-flex flex-column justify-content-between">
+                <div class="d-flex flex-column px-3 pt-3">
+                    <!-- Brand -->
+                    <a href="{{ url_for('planner.home') }}" class="d-flex align-items-center pb-3 mb-2 text-decoration-none border-bottom border-secondary border-opacity-25 w-100">
+                        <div class="stat-icon me-2 text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); width: 42px; height: 42px; border-radius: 10px;">
+                            <i class="fa-solid fa-brain fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="brand-title">AI Planner</span>
+                            <div class="brand-subtitle">CSP Scheduler</div>
+                        </div>
+                    </a>
+
+                    <!-- Navigation Items -->
+                    <ul class="nav nav-pills flex-column mb-auto w-100" id="desktopMenu">
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.home') }}" class="nav-link {% if request.endpoint == 'planner.home' %}active{% endif %}">
+                                <i class="fa-solid fa-house"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.planner_view') }}" class="nav-link text-info fw-bold {% if request.endpoint == 'planner.planner_view' %}active{% endif %}">
+                                <i class="fa-solid fa-microchip"></i>
+                                <span>AI Planner</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.schedule_view') }}" class="nav-link {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <span>Production Schedule</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.utilization_view') }}" class="nav-link {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <span>Resource Utilization</span>
+                            </a>
+                        </li>
+
+                        <div class="nav-section-title mt-2">Factory Resources</div>
+
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('products.list_products') }}" class="nav-link {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
+                                <i class="fa-solid fa-box"></i>
+                                <span>Products</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('machines.list_machines') }}" class="nav-link {% if request.endpoint and 'machines' in request.endpoint %}active{% endif %}">
+                                <i class="fa-solid fa-gears"></i>
+                                <span>Machines</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('workers.list_workers') }}" class="nav-link {% if request.endpoint and 'workers' in request.endpoint %}active{% endif %}">
+                                <i class="fa-solid fa-users-gear"></i>
+                                <span>Workers</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('materials.list_materials') }}" class="nav-link {% if request.endpoint and 'materials' in request.endpoint %}active{% endif %}">
+                                <i class="fa-solid fa-cubes-stacked"></i>
+                                <span>Raw Materials</span>
+                            </a>
+                        </li>
+
+                        <div class="nav-section-title mt-2">Academic & Viva</div>
+
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.constraints_view') }}" class="nav-link {% if request.endpoint == 'planner.constraints_view' %}active{% endif %}">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Active Constraints</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('planner.ai_explanation_view') }}" class="nav-link {% if request.endpoint == 'planner.ai_explanation_view' %}active{% endif %}">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span>How AI Works</span>
+                            </a>
+                        </li>
+
+                        <div class="nav-section-title mt-2">Administration</div>
+
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('admin.admin_panel') }}" class="nav-link text-warning fw-semibold {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Admin & Credentials</span>
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                <span>Sign Out</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Footer in Sidebar -->
+                <div class="p-3 border-top border-secondary border-opacity-25">
+                    <div class="d-flex align-items-center gap-2 p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                        <span class="live-pulse-dot"></span>
+                        <div class="small text-light text-opacity-75" style="font-size:0.75rem;">
+                            <strong>CSP Solver:</strong> Online
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col py-0 px-0 d-flex flex-column min-vh-100" style="width: 100%; min-width: 0;">
+                <!-- Top Navbar -->
+                <nav class="navbar top-navbar d-flex justify-content-between align-items-center flex-nowrap px-3 px-md-4">
+                    <div class="d-flex align-items-center gap-2 gap-sm-3 min-w-0">
+                        <!-- Mobile Hamburger Button (< 768px) -->
+                        <button class="btn btn-sm btn-outline-secondary d-md-none p-1 px-2 border-0 shadow-none text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" title="Open Navigation Menu">
+                            <i class="fa-solid fa-bars fs-5"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center gap-2 text-truncate">
+                            <span class="live-pulse-dot d-none d-sm-inline-block"></span>
+                            <span class="fw-bold text-dark text-truncate" style="font-size: 0.95rem;">AI Production Planner</span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 px-sm-3 py-1 font-monospace small d-none d-lg-inline">
+                            MRV + Backtracking
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
+                        <!-- Quick Load Demo Data -->
+                        <form action="{{ url_for('planner.load_demo') }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3" data-bs-toggle="tooltip" title="Reset and load default 4 products, 3 machines, 4 workers, 4 raw materials">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span class="d-none d-sm-inline">Demo Data</span>
+                            </button>
+                        </form>
+
+                        <!-- Quick Generate Button -->
+                        <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form d-inline">
+                            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Generate</span>
+                            </button>
+                        </form>
+
+                        <!-- User Profile / Admin Dropdown -->
+                        {% if current_user %}
+                        <div class="dropdown d-inline">
+                            <button class="btn btn-sm btn-outline-dark dropdown-toggle d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user-shield text-primary"></i>
+                                <span class="d-none d-md-inline fw-semibold">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-dark text-white p-2" style="border: 1px solid rgba(255,255,255,0.15) !important;">
+                                <li class="px-2 py-1 text-secondary small border-bottom border-secondary border-opacity-25 mb-1">
+                                    Signed in as <strong class="text-white">{{ current_user.username }}</strong>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-light rounded py-1" href="{{ url_for('admin.admin_panel') }}">
+                                        <i class="fa-solid fa-lock-open me-2 text-success"></i> Admin Panel & Credentials
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary border-opacity-25 my-1"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger rounded py-1" href="{{ url_for('auth.logout') }}">
+                                        <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sign Out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </nav>
+
+                <!-- Page Content Body -->
+                <div class="container-fluid p-3 p-sm-4 p-md-5 flex-grow-1">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                                    <i class="fa-solid fa-circle-info fs-5 flex-shrink-0"></i>
+                                    <div class="small">{{ message }}</div>
+                                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    {% if content_error %}
+                        <div class="alert alert-danger shadow-sm border-0">
+                            <h4 class="alert-heading fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ content_error }}</h4>
+                            <p class="small mb-0">An unexpected condition occurred. Please verify database integrity or click 'Demo Data'.</p>
+                        </div>
+                    {% endif %}
+
+                    {% block content %}{% endblock %}
+                </div>
+
+                <!-- Footer -->
+                <footer class="bg-white border-top py-3 px-3 px-md-5 text-center text-muted small mt-auto">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <strong>AI Subject Mini-Project:</strong> Constraint Satisfaction Based Production Scheduling
+                        </div>
+                        <div class="text-secondary font-monospace" style="font-size: 0.78rem;">
+                            Python 3 &bull; Flask &bull; Backtracking &bull; MRV &bull; SQLite
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
