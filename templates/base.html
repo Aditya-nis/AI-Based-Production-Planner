@@ -17,7 +17,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <!-- AI Loader Overlay with Futuristic Pulse Ring -->
     <div id="aiLoaderOverlay" class="ai-loader-overlay">
@@ -30,345 +30,415 @@
         </p>
     </div>
 
-    <!-- Mobile Offcanvas Sidebar Drawer (Screens < 768px) -->
-    <div class="offcanvas offcanvas-start bg-dark text-white d-md-none sidebar-offcanvas" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel" style="width: 280px; background-color: #0b1120 !important;">
-        <div class="offcanvas-header border-bottom border-secondary border-opacity-25 py-3">
-            <div class="d-flex align-items-center gap-2">
-                <div class="stat-icon text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); width: 36px; height: 36px; border-radius: 8px;">
-                    <i class="fa-solid fa-brain fs-6"></i>
-                </div>
-                <div>
-                    <span class="brand-title" style="font-size: 1.05rem;">AI Planner</span>
-                    <div class="brand-subtitle" style="font-size: 0.65rem;">CSP Scheduler</div>
-                </div>
-            </div>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body px-3 py-2 d-flex flex-column justify-content-between">
-            <ul class="nav nav-pills flex-column w-100" id="mobileMenu">
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.home') }}" class="nav-link {% if request.endpoint == 'planner.home' %}active{% endif %}">
-                        <i class="fa-solid fa-house"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.planner_view') }}" class="nav-link text-info fw-bold {% if request.endpoint == 'planner.planner_view' %}active{% endif %}">
-                        <i class="fa-solid fa-microchip"></i>
-                        <span>AI Planner</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.schedule_view') }}" class="nav-link {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span>Production Schedule</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.utilization_view') }}" class="nav-link {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}">
-                        <i class="fa-solid fa-gauge-high"></i>
-                        <span>Resource Utilization</span>
-                    </a>
-                </li>
-
-                <div class="nav-section-title mt-2">Factory Resources</div>
-
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('products.list_products') }}" class="nav-link {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
-                        <i class="fa-solid fa-box"></i>
-                        <span>Products</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('machines.list_machines') }}" class="nav-link {% if request.endpoint and 'machines' in request.endpoint %}active{% endif %}">
-                        <i class="fa-solid fa-gears"></i>
-                        <span>Machines</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('workers.list_workers') }}" class="nav-link {% if request.endpoint and 'workers' in request.endpoint %}active{% endif %}">
-                        <i class="fa-solid fa-users-gear"></i>
-                        <span>Workers</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('materials.list_materials') }}" class="nav-link {% if request.endpoint and 'materials' in request.endpoint %}active{% endif %}">
-                        <i class="fa-solid fa-cubes-stacked"></i>
-                        <span>Raw Materials</span>
-                    </a>
-                </li>
-
-                <div class="nav-section-title mt-2">Academic & Viva</div>
-
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.constraints_view') }}" class="nav-link {% if request.endpoint == 'planner.constraints_view' %}active{% endif %}">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>Active Constraints</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('planner.ai_explanation_view') }}" class="nav-link {% if request.endpoint == 'planner.ai_explanation_view' %}active{% endif %}">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                        <span>How AI Works</span>
-                    </a>
-                </li>
-
-                <div class="nav-section-title mt-2">Administration</div>
-
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('admin.admin_panel') }}" class="nav-link text-warning fw-semibold {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>Admin & Credentials</span>
-                    </a>
-                </li>
-                <li class="nav-item w-100">
-                    <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        <span>Sign Out</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="pt-3 border-top border-secondary border-opacity-25 mt-3">
-                <div class="d-flex align-items-center gap-2 p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
-                    <span class="live-pulse-dot"></span>
-                    <div class="small text-light text-opacity-75" style="font-size:0.75rem;">
-                        <strong>CSP Solver:</strong> Online
+    <!-- ==============================================================================
+         GLOBAL ENTERPRISE HEADER / TOP NAVBAR
+         ============================================================================== -->
+    <header class="site-header sticky-top">
+        <nav class="navbar navbar-expand-xl navbar-dark py-2 px-3 px-xl-4">
+            <div class="container-fluid px-0">
+                <!-- Brand Identity -->
+                <a class="navbar-brand d-flex align-items-center gap-2 me-3 me-xl-4" href="{{ url_for('planner.home') }}">
+                    <div class="brand-logo-icon shadow-sm">
+                        <i class="fa-solid fa-brain"></i>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="d-flex flex-column">
+                        <span class="brand-name">AI Production Planner</span>
+                        <span class="brand-badge">CSP Scheduling Engine</span>
+                    </div>
+                </a>
 
-    <!-- Main Application Wrapper -->
-    <div class="container-fluid p-0">
-        <div class="row g-0 flex-nowrap">
-            <!-- Persistent Desktop Sidebar (Screens >= 768px) -->
-            <div class="col-md-3 col-xl-2 px-0 sidebar d-none d-md-flex flex-column justify-content-between">
-                <div class="d-flex flex-column px-3 pt-3">
-                    <!-- Brand -->
-                    <a href="{{ url_for('planner.home') }}" class="d-flex align-items-center pb-3 mb-2 text-decoration-none border-bottom border-secondary border-opacity-25 w-100">
-                        <div class="stat-icon me-2 text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); width: 42px; height: 42px; border-radius: 10px;">
-                            <i class="fa-solid fa-brain fs-5"></i>
-                        </div>
-                        <div>
-                            <span class="brand-title">AI Planner</span>
-                            <div class="brand-subtitle">CSP Scheduler</div>
-                        </div>
-                    </a>
+                <!-- Mobile & Tablet Hamburger Toggle (< 1200px) -->
+                <button class="navbar-toggler border-0 shadow-none p-2 text-light d-xl-none" type="button" 
+                        data-bs-toggle="offcanvas" data-bs-target="#mainNavigationDrawer" aria-controls="mainNavigationDrawer" aria-label="Toggle navigation">
+                    <i class="fa-solid fa-bars fs-4"></i>
+                </button>
 
-                    <!-- Navigation Items -->
-                    <ul class="nav nav-pills flex-column mb-auto w-100" id="desktopMenu">
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.home') }}" class="nav-link {% if request.endpoint == 'planner.home' %}active{% endif %}">
-                                <i class="fa-solid fa-house"></i>
-                                <span>Home</span>
+                <!-- Desktop Navigation Links (>= 1200px) -->
+                <div class="collapse navbar-collapse d-none d-xl-flex justify-content-between" id="desktopNavbarContent">
+                    <ul class="navbar-nav align-items-center gap-1 mb-2 mb-xl-0">
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded-3 {% if request.endpoint == 'planner.home' %}active{% endif %}" href="{{ url_for('planner.home') }}">
+                                <i class="fa-solid fa-house me-1 text-primary"></i> Home
                             </a>
                         </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
-                                <i class="fa-solid fa-chart-line"></i>
-                                <span>Dashboard</span>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded-3 {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}" href="{{ url_for('dashboard.dashboard') }}">
+                                <i class="fa-solid fa-chart-line me-1 text-info"></i> Dashboard
                             </a>
                         </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.planner_view') }}" class="nav-link text-info fw-bold {% if request.endpoint == 'planner.planner_view' %}active{% endif %}">
-                                <i class="fa-solid fa-microchip"></i>
-                                <span>AI Planner</span>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded-3 ai-planner-pill {% if request.endpoint == 'planner.planner_view' %}active{% endif %}" href="{{ url_for('planner.planner_view') }}">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1 text-info"></i> AI Planner
                             </a>
                         </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.schedule_view') }}" class="nav-link {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}">
-                                <i class="fa-solid fa-calendar-check"></i>
-                                <span>Production Schedule</span>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded-3 {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}" href="{{ url_for('planner.schedule_view') }}">
+                                <i class="fa-solid fa-calendar-check me-1 text-success"></i> Schedule
                             </a>
                         </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.utilization_view') }}" class="nav-link {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}">
-                                <i class="fa-solid fa-gauge-high"></i>
-                                <span>Resource Utilization</span>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded-3 {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}" href="{{ url_for('planner.utilization_view') }}">
+                                <i class="fa-solid fa-gauge-high me-1 text-warning"></i> Utilization
                             </a>
                         </li>
 
-                        <div class="nav-section-title mt-2">Factory Resources</div>
-
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('products.list_products') }}" class="nav-link {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
-                                <i class="fa-solid fa-box"></i>
-                                <span>Products</span>
+                        <!-- Factory Resources Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-3 py-2 rounded-3 {% if request.endpoint and ('products' in request.endpoint or 'machines' in request.endpoint or 'workers' in request.endpoint or 'materials' in request.endpoint) %}active{% endif %}" 
+                               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-industry me-1 text-secondary"></i> Resources
                             </a>
-                        </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('machines.list_machines') }}" class="nav-link {% if request.endpoint and 'machines' in request.endpoint %}active{% endif %}">
-                                <i class="fa-solid fa-gears"></i>
-                                <span>Machines</span>
-                            </a>
-                        </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('workers.list_workers') }}" class="nav-link {% if request.endpoint and 'workers' in request.endpoint %}active{% endif %}">
-                                <i class="fa-solid fa-users-gear"></i>
-                                <span>Workers</span>
-                            </a>
-                        </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('materials.list_materials') }}" class="nav-link {% if request.endpoint and 'materials' in request.endpoint %}active{% endif %}">
-                                <i class="fa-solid fa-cubes-stacked"></i>
-                                <span>Raw Materials</span>
-                            </a>
-                        </li>
-
-                        <div class="nav-section-title mt-2">Academic & Viva</div>
-
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.constraints_view') }}" class="nav-link {% if request.endpoint == 'planner.constraints_view' %}active{% endif %}">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <span>Active Constraints</span>
-                            </a>
-                        </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('planner.ai_explanation_view') }}" class="nav-link {% if request.endpoint == 'planner.ai_explanation_view' %}active{% endif %}">
-                                <i class="fa-solid fa-graduation-cap"></i>
-                                <span>How AI Works</span>
-                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark border-secondary border-opacity-25 shadow-lg p-2 rounded-3">
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('products.list_products') }}">
+                                        <i class="fa-solid fa-box text-primary"></i> Products Management
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('machines.list_machines') }}">
+                                        <i class="fa-solid fa-gears text-warning"></i> Machines & Workstations
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('workers.list_workers') }}">
+                                        <i class="fa-solid fa-users-gear text-success"></i> Certified Workers
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('materials.list_materials') }}">
+                                        <i class="fa-solid fa-cubes-stacked text-danger"></i> Raw Materials Stock
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
-                        <div class="nav-section-title mt-2">Administration</div>
-
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('admin.admin_panel') }}" class="nav-link text-warning fw-semibold {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <span>Admin & Credentials</span>
+                        <!-- Academic & Viva Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-3 py-2 rounded-3 {% if request.endpoint and ('constraints' in request.endpoint or 'explanation' in request.endpoint) %}active{% endif %}" 
+                               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-graduation-cap me-1 text-purple"></i> Theory & Viva
                             </a>
-                        </li>
-                        <li class="nav-item w-100">
-                            <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                                <span>Sign Out</span>
-                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark border-secondary border-opacity-25 shadow-lg p-2 rounded-3">
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('planner.constraints_view') }}">
+                                        <i class="fa-solid fa-shield-halved text-warning"></i> 10 Hard Constraints
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('planner.ai_explanation_view') }}">
+                                        <i class="fa-solid fa-book-open-reader text-info"></i> How AI Works (Viva Prep)
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
-                </div>
 
-                <!-- Footer in Sidebar -->
-                <div class="p-3 border-top border-secondary border-opacity-25">
-                    <div class="d-flex align-items-center gap-2 p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
-                        <span class="live-pulse-dot"></span>
-                        <div class="small text-light text-opacity-75" style="font-size:0.75rem;">
-                            <strong>CSP Solver:</strong> Online
+                    <!-- Right Header Utilities & Actions -->
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <!-- Solver Status Pill -->
+                        <div class="solver-status-chip d-flex align-items-center gap-2 px-3 py-1 rounded-pill">
+                            <span class="live-pulse-dot"></span>
+                            <span class="small font-monospace" style="font-size: 0.78rem;">CSP Online</span>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Main Content Area -->
-            <div class="col py-0 px-0 d-flex flex-column min-vh-100" style="width: 100%; min-width: 0;">
-                <!-- Top Navbar -->
-                <nav class="navbar top-navbar d-flex justify-content-between align-items-center flex-nowrap px-3 px-md-4">
-                    <div class="d-flex align-items-center gap-2 gap-sm-3 min-w-0">
-                        <!-- Mobile Hamburger Button (< 768px) -->
-                        <button class="btn btn-sm btn-outline-secondary d-md-none p-1 px-2 border-0 shadow-none text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" title="Open Navigation Menu">
-                            <i class="fa-solid fa-bars fs-5"></i>
-                        </button>
-
-                        <div class="d-flex align-items-center gap-2 text-truncate">
-                            <span class="live-pulse-dot d-none d-sm-inline-block"></span>
-                            <span class="fw-bold text-dark text-truncate" style="font-size: 0.95rem;">AI Production Planner</span>
-                        </div>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 px-sm-3 py-1 font-monospace small d-none d-lg-inline">
-                            MRV + Backtracking
-                        </span>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
-                        <!-- Quick Load Demo Data -->
-                        <form action="{{ url_for('planner.load_demo') }}" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3" data-bs-toggle="tooltip" title="Reset and load default 4 products, 3 machines, 4 workers, 4 raw materials">
+                        <!-- Demo Data Reset Form -->
+                        <form action="{{ url_for('planner.load_demo') }}" method="POST" class="d-inline mb-0">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 px-3 py-2 rounded-3" 
+                                    data-bs-toggle="tooltip" title="Reset factory baseline dataset (4 products, 3 machines, 4 workers, 4 materials)">
                                 <i class="fa-solid fa-rotate-left"></i>
-                                <span class="d-none d-sm-inline">Demo Data</span>
+                                <span>Demo Data</span>
                             </button>
                         </form>
 
                         <!-- Quick Generate Button -->
-                        <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form d-inline">
-                            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3">
+                        <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form d-inline mb-0">
+                            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                <span>Generate</span>
+                                <span>Generate Plan</span>
                             </button>
                         </form>
 
                         <!-- User Profile / Admin Dropdown -->
                         {% if current_user %}
-                        <div class="dropdown d-inline">
-                            <button class="btn btn-sm btn-outline-dark dropdown-toggle d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-user-shield text-primary"></i>
-                                <span class="d-none d-md-inline fw-semibold">{{ current_user.username }}</span>
+                        <div class="dropdown ms-1">
+                            <button class="btn btn-sm user-profile-btn dropdown-toggle d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm" 
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar-circle">
+                                    {{ current_user.username[0]|upper }}
+                                </div>
+                                <span class="d-none d-xxl-inline fw-semibold text-white small font-monospace">{{ current_user.username }}</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-dark text-white p-2" style="border: 1px solid rgba(255,255,255,0.15) !important;">
-                                <li class="px-2 py-1 text-secondary small border-bottom border-secondary border-opacity-25 mb-1">
-                                    Signed in as <strong class="text-white">{{ current_user.username }}</strong>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary border-opacity-25 p-2 rounded-3" style="min-width: 220px;">
+                                <li class="px-3 py-2 border-bottom border-secondary border-opacity-25 mb-1">
+                                    <div class="text-white fw-bold small">{{ current_user.username }}</div>
+                                    <div class="text-secondary small font-monospace text-capitalize" style="font-size: 0.72rem;">Role: {{ current_user.role }}</div>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item text-light rounded py-1" href="{{ url_for('admin.admin_panel') }}">
-                                        <i class="fa-solid fa-lock-open me-2 text-success"></i> Admin Panel & Credentials
+                                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('admin.admin_panel') }}">
+                                        <i class="fa-solid fa-user-shield text-success"></i> Admin & Credentials
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider border-secondary border-opacity-25 my-1"></li>
                                 <li>
-                                    <a class="dropdown-item text-danger rounded py-1" href="{{ url_for('auth.logout') }}">
-                                        <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sign Out
+                                    <a class="dropdown-item text-danger rounded-2 py-2 d-flex align-items-center gap-2" href="{{ url_for('auth.logout') }}">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         {% endif %}
                     </div>
-                </nav>
-
-                <!-- Page Content Body -->
-                <div class="container-fluid p-3 p-sm-4 p-md-5 flex-grow-1">
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
-                                    <i class="fa-solid fa-circle-info fs-5 flex-shrink-0"></i>
-                                    <div class="small">{{ message }}</div>
-                                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-
-                    {% if content_error %}
-                        <div class="alert alert-danger shadow-sm border-0">
-                            <h4 class="alert-heading fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ content_error }}</h4>
-                            <p class="small mb-0">An unexpected condition occurred. Please verify database integrity or click 'Demo Data'.</p>
-                        </div>
-                    {% endif %}
-
-                    {% block content %}{% endblock %}
                 </div>
+            </div>
+        </nav>
+    </header>
 
-                <!-- Footer -->
-                <footer class="bg-white border-top py-3 px-3 px-md-5 text-center text-muted small mt-auto">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div>
-                            <strong>AI Subject Mini-Project:</strong> Constraint Satisfaction Based Production Scheduling
+    <!-- ==============================================================================
+         MOBILE / TABLET OFFCANVAS NAVIGATION DRAWER (< 1200px)
+         ============================================================================== -->
+    <div class="offcanvas offcanvas-start bg-dark text-white d-xl-none" tabindex="-1" id="mainNavigationDrawer" 
+         aria-labelledby="mainNavigationDrawerLabel" style="width: 300px; background-color: #0b1120 !important; border-right: 1px solid rgba(255, 255, 255, 0.1);">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-25 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="brand-logo-icon shadow-sm" style="width: 36px; height: 36px; font-size: 1.05rem;">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="brand-name" style="font-size: 1.05rem;">AI Production Planner</span>
+                    <span class="brand-badge" style="font-size: 0.6rem;">CSP Engine</span>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body px-3 py-3 d-flex flex-column justify-content-between">
+            <div class="w-100">
+                <!-- User Profile Snippet in Mobile -->
+                {% if current_user %}
+                <div class="p-3 mb-3 rounded-3 bg-dark bg-opacity-75 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="user-avatar-circle" style="width: 32px; height: 32px;">
+                            {{ current_user.username[0]|upper }}
                         </div>
-                        <div class="text-secondary font-monospace" style="font-size: 0.78rem;">
-                            Python 3 &bull; Flask &bull; Backtracking &bull; MRV &bull; SQLite
+                        <div>
+                            <div class="text-white fw-bold small">{{ current_user.username }}</div>
+                            <div class="text-secondary small font-monospace" style="font-size: 0.7rem;">Role: {{ current_user.role }}</div>
                         </div>
                     </div>
-                </footer>
+                    <span class="badge bg-success bg-opacity-25 text-success small font-monospace">Online</span>
+                </div>
+                {% endif %}
+
+                <!-- Mobile Navigation Links -->
+                <div class="text-secondary small fw-bold text-uppercase px-2 mb-2 font-monospace" style="font-size: 0.7rem;">Navigation</div>
+                <ul class="nav nav-pills flex-column w-100 mb-3 gap-1">
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.home') }}" class="nav-link text-white {% if request.endpoint == 'planner.home' %}active{% endif %}">
+                            <i class="fa-solid fa-house me-2 text-primary"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link text-white {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-line me-2 text-info"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.planner_view') }}" class="nav-link text-cyan fw-bold {% if request.endpoint == 'planner.planner_view' %}active{% endif %}">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i> AI Production Planner
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.schedule_view') }}" class="nav-link text-white {% if request.endpoint == 'planner.schedule_view' %}active{% endif %}">
+                            <i class="fa-solid fa-calendar-check me-2 text-success"></i> Production Schedule
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.utilization_view') }}" class="nav-link text-white {% if request.endpoint == 'planner.utilization_view' %}active{% endif %}">
+                            <i class="fa-solid fa-gauge-high me-2 text-warning"></i> Resource Utilization
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="text-secondary small fw-bold text-uppercase px-2 mb-2 font-monospace" style="font-size: 0.7rem;">Factory Resources</div>
+                <ul class="nav nav-pills flex-column w-100 mb-3 gap-1">
+                    <li class="nav-item">
+                        <a href="{{ url_for('products.list_products') }}" class="nav-link text-white {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
+                            <i class="fa-solid fa-box me-2 text-primary"></i> Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('machines.list_machines') }}" class="nav-link text-white {% if request.endpoint and 'machines' in request.endpoint %}active{% endif %}">
+                            <i class="fa-solid fa-gears me-2 text-warning"></i> Machines
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('workers.list_workers') }}" class="nav-link text-white {% if request.endpoint and 'workers' in request.endpoint %}active{% endif %}">
+                            <i class="fa-solid fa-users-gear me-2 text-success"></i> Workers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('materials.list_materials') }}" class="nav-link text-white {% if request.endpoint and 'materials' in request.endpoint %}active{% endif %}">
+                            <i class="fa-solid fa-cubes-stacked me-2 text-danger"></i> Raw Materials
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="text-secondary small fw-bold text-uppercase px-2 mb-2 font-monospace" style="font-size: 0.7rem;">Theory & Administration</div>
+                <ul class="nav nav-pills flex-column w-100 mb-3 gap-1">
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.constraints_view') }}" class="nav-link text-white {% if request.endpoint == 'planner.constraints_view' %}active{% endif %}">
+                            <i class="fa-solid fa-shield-halved me-2 text-warning"></i> 10 Hard Constraints
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('planner.ai_explanation_view') }}" class="nav-link text-white {% if request.endpoint == 'planner.ai_explanation_view' %}active{% endif %}">
+                            <i class="fa-solid fa-book-open-reader me-2 text-info"></i> How AI Works (Viva Guide)
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin.admin_panel') }}" class="nav-link text-warning fw-semibold {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
+                            <i class="fa-solid fa-user-shield me-2"></i> Admin & Credentials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sign Out
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Mobile Actions Footer -->
+            <div class="pt-3 border-top border-secondary border-opacity-25 d-flex flex-column gap-2">
+                <form action="{{ url_for('planner.generate_plan') }}" method="POST" class="ai-generate-form mb-0">
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Generate Production Plan</span>
+                    </button>
+                </form>
+                <form action="{{ url_for('planner.load_demo') }}" method="POST" class="mb-0">
+                    <button type="submit" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset Demo Data</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+
+    <!-- ==============================================================================
+         MAIN APPLICATION CONTENT VIEWPORT
+         ============================================================================== -->
+    <main class="flex-grow-1 w-100">
+        <div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+            <!-- Flash Message Banner Notifications -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
+                            <i class="fa-solid {% if category == 'success' %}fa-circle-check text-success{% elif category == 'danger' %}fa-circle-exclamation text-danger{% else %}fa-circle-info text-info{% endif %} fs-5 flex-shrink-0"></i>
+                            <div class="small flex-grow-1">{{ message }}</div>
+                            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if content_error %}
+                <div class="alert alert-danger shadow-sm border-0 mb-4 rounded-3">
+                    <h4 class="alert-heading fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ content_error }}</h4>
+                    <p class="small mb-0">An unexpected condition occurred. Please verify database integrity or click 'Demo Data'.</p>
+                </div>
+            {% endif %}
+
+            <!-- Dynamic Template Block -->
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- ==============================================================================
+         GLOBAL ENTERPRISE FOOTER
+         ============================================================================== -->
+    <footer class="site-footer mt-auto">
+        <div class="container-fluid px-3 px-md-5 py-5">
+            <div class="row g-4 justify-content-between">
+                <!-- Col 1: Brand & Project Abstract -->
+                <div class="col-12 col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="brand-logo-icon shadow-sm" style="width: 36px; height: 36px; font-size: 1.1rem;">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <span class="fs-5 fw-bold text-white tracking-tight">AI Production Planner</span>
+                    </div>
+                    <p class="text-secondary small mb-3" style="max-width: 380px; line-height: 1.7;">
+                        Autonomous industrial manufacturing scheduling system using formal Constraint Satisfaction Problems (CSP), Recursive Backtracking Search with MRV heuristic, and 10 Hard Constraints verification.
+                    </p>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25 px-3 py-1 rounded-pill small font-monospace">
+                            <i class="fa-solid fa-graduation-cap me-1"></i> AI Subject Mini-Project
+                        </span>
+                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill small font-monospace">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Conflict-Free Guaranteed
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Planning & Operations -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="footer-heading">Operations</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="{{ url_for('planner.home') }}"><i class="fa-solid fa-house me-2"></i>Home</a></li>
+                        <li><a href="{{ url_for('dashboard.dashboard') }}"><i class="fa-solid fa-chart-line me-2"></i>Dashboard</a></li>
+                        <li><a href="{{ url_for('planner.planner_view') }}"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Planner</a></li>
+                        <li><a href="{{ url_for('planner.schedule_view') }}"><i class="fa-solid fa-calendar-check me-2"></i>Schedule</a></li>
+                        <li><a href="{{ url_for('planner.utilization_view') }}"><i class="fa-solid fa-gauge-high me-2"></i>Utilization</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Factory Resources -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="footer-heading">Factory Data</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="{{ url_for('products.list_products') }}"><i class="fa-solid fa-box me-2"></i>Products</a></li>
+                        <li><a href="{{ url_for('machines.list_machines') }}"><i class="fa-solid fa-gears me-2"></i>Machines</a></li>
+                        <li><a href="{{ url_for('workers.list_workers') }}"><i class="fa-solid fa-users-gear me-2"></i>Workers</a></li>
+                        <li><a href="{{ url_for('materials.list_materials') }}"><i class="fa-solid fa-cubes-stacked me-2"></i>Raw Materials</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: AI Theory & Administration -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="footer-heading">Architecture & Admin</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="{{ url_for('planner.constraints_view') }}"><i class="fa-solid fa-shield-halved me-2"></i>10 Hard Constraints</a></li>
+                        <li><a href="{{ url_for('planner.ai_explanation_view') }}"><i class="fa-solid fa-book-open-reader me-2"></i>How AI Works (Viva Guide)</a></li>
+                        <li><a href="{{ url_for('admin.admin_panel') }}"><i class="fa-solid fa-user-shield me-2"></i>Admin & Credentials Portal</a></li>
+                        <li><a href="https://github.com/Aditya-nis/AI-Based-Production-Planner" target="_blank" rel="noopener"><i class="fa-brands fa-github me-2"></i>GitHub Repository</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright & Engine Telemetry -->
+            <div class="footer-bottom-bar mt-5 pt-4 border-top border-secondary border-opacity-25 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="live-pulse-dot"></span>
+                    <span class="text-light text-opacity-75 small font-monospace">
+                        CSP Engine: <strong>Operational</strong> (Zero Collisions Enforced)
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="tech-stack-pill">Python 3.11</span>
+                    <span class="tech-stack-pill">Flask</span>
+                    <span class="tech-stack-pill">Backtracking CSP</span>
+                    <span class="tech-stack-pill">MRV Heuristic</span>
+                    <span class="tech-stack-pill">SQLite</span>
+                    <span class="tech-stack-pill">Docker</span>
+                </div>
+                <div class="text-secondary small font-monospace">
+                    &copy; 2026 AI Production Planning &bull; All Rights Reserved
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
