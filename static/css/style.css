@@ -166,147 +166,17 @@ code, kbd, samp, pre, .font-monospace {
 }
 
 /* ==============================================================================
-   GLOBAL ENTERPRISE HEADER & NAVBAR
+   TOP NAVBAR COMPONENT
    ============================================================================== */
-.site-header {
-    background: rgba(11, 17, 32, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-    z-index: 1030;
-    transition: all 0.25s ease;
-}
-
-.brand-logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-    flex-shrink: 0;
-}
-
-.brand-name {
-    font-weight: 800;
-    font-size: 1.15rem;
-    color: #ffffff;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1.2;
-}
-
-.brand-badge {
-    font-size: 0.62rem;
-    color: var(--accent-cyan);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    line-height: 1;
-}
-
-.site-header .nav-link {
-    color: #94a3b8 !important;
-    font-weight: 500;
-    font-size: 0.875rem;
-    padding: 0.5rem 0.85rem !important;
-    border-radius: var(--radius-sm);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-}
-
-.site-header .nav-link:hover {
-    color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.site-header .nav-link.active {
-    color: #ffffff !important;
-    background: rgba(99, 102, 241, 0.2) !important;
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    font-weight: 600;
-}
-
-.ai-planner-pill {
-    background: rgba(6, 182, 212, 0.1) !important;
-    border: 1px solid rgba(6, 182, 212, 0.3) !important;
-    color: #38bdf8 !important;
-    font-weight: 600 !important;
-}
-
-.ai-planner-pill:hover {
-    background: rgba(6, 182, 212, 0.2) !important;
-    border-color: #38bdf8 !important;
-    color: #ffffff !important;
-}
-
-.ai-planner-pill.active {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(6, 182, 212, 0.3)) !important;
-    border-color: #38bdf8 !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
-}
-
-.solver-status-chip {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    color: #34d399;
-    font-weight: 600;
-    font-size: 0.78rem;
-}
-
-.user-profile-btn {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    color: #ffffff !important;
-    transition: all 0.2s ease;
-}
-
-.user-profile-btn:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(99, 102, 241, 0.5) !important;
-}
-
-.user-avatar-circle {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
-.dropdown-menu-dark {
-    background: rgba(15, 23, 42, 0.96) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: var(--radius-md) !important;
-    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6) !important;
-}
-
-.dropdown-menu-dark .dropdown-item {
-    color: #cbd5e1;
-    font-size: 0.86rem;
-    transition: all 0.15s ease;
-}
-
-.dropdown-menu-dark .dropdown-item:hover {
-    color: #ffffff;
-    background: rgba(99, 102, 241, 0.25);
+.top-navbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.85rem 1.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 99;
 }
 
 .live-pulse-dot {
@@ -324,75 +194,6 @@ code, kbd, samp, pre, .font-monospace {
     70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
-
-/* ==============================================================================
-   GLOBAL ENTERPRISE FOOTER
-   ============================================================================== */
-.site-footer {
-    background: #080d1a;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: #94a3b8;
-    position: relative;
-    overflow: hidden;
-}
-
-.site-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 20%;
-    right: 20%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), rgba(6, 182, 212, 0.4), transparent);
-}
-
-.footer-heading {
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 1.15rem;
-}
-
-.footer-links {
-    margin-bottom: 0;
-}
-
-.footer-links li {
-    margin-bottom: 0.65rem;
-}
-
-.footer-links a {
-    color: #94a3b8;
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.footer-links a:hover {
-    color: #38bdf8;
-    transform: translateX(4px);
-}
-
-.tech-stack-pill {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #94a3b8;
-    font-size: 0.72rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 50rem;
-    font-family: 'JetBrains Mono', monospace;
-    transition: all 0.2s ease;
-}
-
-.tech-stack-pill:hover {
-    border-color: rgba(99, 102, 241, 0.4);
-    color: #c7d2fe;
-}
-
 
 /* ==============================================================================
    CARDS & PANELS
