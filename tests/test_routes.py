@@ -5,12 +5,28 @@ Integration & End-to-End Route Tests for AI Production Planner with Authenticati
 import unittest
 from app import create_app
 from models.models import db, Product, Machine, Worker, Material, Schedule, User
+from models.demo_data import load_demo_data, ensure_default_admin
+
+class TestConfig:
+    TESTING = True
+    SECRET_KEY = 'test-secret-key-for-routes'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    is_vercel = True
 
 class TestAppRoutes(unittest.TestCase):
     def setUp(self):
-        self.app = create_app()
-        self.app.config['TESTING'] = True
+        self.app = create_app(TestConfig)
         self.client = self.app.test_client()
+        with self.app.app_context():
+            db.create_all()
+            load_demo_data()
+            ensure_default_admin()
+
+    def tearDown(self):
+        with self.app.app_context():
+            db.session.remove()
+            db.drop_all()
 
     def login(self, username='admin', password='admin123'):
         """Helper to log in as admin."""
@@ -175,10 +191,6 @@ class TestAppRoutes(unittest.TestCase):
             res_after = self.client.post('/planner/generate', follow_redirects=True)
             self.assertEqual(res_after.status_code, 200)
 
-            # Reset demo data
-            demo_res = self.client.post('/load-demo', follow_redirects=True)
-            self.assertEqual(demo_res.status_code, 200)
-
     def test_dynamic_calculations_on_new_machine_and_product(self):
         """
         Verify that adding a new custom machine, product, or worker dynamically updates
@@ -267,8 +279,7 @@ class TestAppRoutes(unittest.TestCase):
             self.assertIn(b'Custom Laser Welder Station', util_res.data)
             self.assertIn(b'31.2%', util_res.data)
 
-            # 8. Reset demo data cleanly
-            self.client.post('/load-demo', follow_redirects=True)
+            # 8. Finished test cleanly
 
 if __name__ == '__main__':
     unittest.main()

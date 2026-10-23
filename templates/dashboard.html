@@ -273,7 +273,7 @@
 {% block scripts %}
 <script>
     // Machine Utilization Bar Chart with Modern Gradient styling
-    const machLabels = [{% for m_name in machine_utilization.keys() %}'{{ m_name }}',{% endfor %}];
+    const machLabels = {{ machine_utilization.keys() | list | tojson }};
     const machData = [{% for item in machine_utilization.values() %}{{ item.percentage }},{% endfor %}];
 
     const ctxMach = document.getElementById('machineUtilChart').getContext('2d');

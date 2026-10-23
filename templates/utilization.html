@@ -131,7 +131,7 @@
 {% block scripts %}
 <script>
     // Worker Utilization Chart with Gradient Fill
-    const workerLabels = [{% for w in worker_stats %}'{{ w.name }}',{% endfor %}];
+    const workerLabels = {{ worker_stats | map(attribute='name') | list | tojson }};
     const workerData = [{% for w in worker_stats %}{{ w.utilization }},{% endfor %}];
 
     const ctxWorker = document.getElementById('workerChart').getContext('2d');
@@ -174,7 +174,7 @@
     });
 
     // Production Distribution Chart
-    const prodLabels = [{% for k in product_distribution.keys() %}'{{ k }}',{% endfor %}];
+    const prodLabels = {{ product_distribution.keys() | list | tojson }};
     const prodCounts = [{% for v in product_distribution.values() %}{{ v }},{% endfor %}];
 
     const ctxDist = document.getElementById('productDistChart').getContext('2d');
