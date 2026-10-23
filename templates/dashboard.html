@@ -142,8 +142,12 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
             </div>
-            <div class="mt-2 text-success small fw-semibold d-flex align-items-center gap-1">
-                <i class="fa-solid fa-check-circle"></i> 0 conflicts in schedule
+            <div class="mt-2 {% if failed_constraints > 0 %}text-danger{% else %}text-success{% endif %} small fw-semibold d-flex align-items-center gap-1">
+                {% if failed_constraints > 0 %}
+                    <i class="fa-solid fa-triangle-exclamation"></i> {{ failed_constraints }} conflicts detected
+                {% else %}
+                    <i class="fa-solid fa-check-circle"></i> 0 conflicts in schedule
+                {% endif %}
             </div>
         </div>
     </div>

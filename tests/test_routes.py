@@ -179,5 +179,96 @@ class TestAppRoutes(unittest.TestCase):
             demo_res = self.client.post('/load-demo', follow_redirects=True)
             self.assertEqual(demo_res.status_code, 200)
 
+    def test_dynamic_calculations_on_new_machine_and_product(self):
+        """
+        Verify that adding a new custom machine, product, or worker dynamically updates
+        the CSP schedule, machine utilization, and dashboard KPI calculations without relying on defaults.
+        """
+        self.login()
+
+        with self.app.app_context():
+            # 1. Add a new custom machine
+            add_mach_res = self.client.post('/machines/add', data={
+                'name': 'Custom Laser Welder Station',
+                'machine_code': 'MAC-WLD-99',
+                'machine_type': 'Welding',
+                'capacity': '1',
+                'available_hours': '8.0',
+                'start_time': '08:00',
+                'end_time': '17:00',
+                'status': 'Available'
+            }, follow_redirects=True)
+            self.assertEqual(add_mach_res.status_code, 200)
+
+            new_mach = Machine.query.filter_by(machine_code='MAC-WLD-99').first()
+            self.assertIsNotNone(new_mach)
+            self.assertEqual(new_mach.name, 'Custom Laser Welder Station')
+
+            # 2. Add a compatible technician with required Welding skill
+            add_worker_res = self.client.post('/workers/add', data={
+                'name': 'Welder Specialist Walter',
+                'worker_code': 'WRK-WLD-99',
+                'skill': 'Welding',
+                'available_hours': '8.0',
+                'start_time': '08:00',
+                'end_time': '17:00',
+                'status': 'Available'
+            }, follow_redirects=True)
+            self.assertEqual(add_worker_res.status_code, 200)
+            new_worker = Worker.query.filter_by(worker_code='WRK-WLD-99').first()
+            self.assertIsNotNone(new_worker)
+
+            # 3. Add a new custom product requiring the new machine type
+            add_prod_res = self.client.post('/products/add', data={
+                'name': 'Titanium Exhaust Manifold',
+                'code': 'PRD-EXH-99',
+                'quantity': '1',
+                'production_time': '2.5',
+                'priority': 'High',
+                'deadline': '15:00',
+                'machine_type': 'Welding',
+                'material_id': '',
+                'material_quantity': '0'
+            }, follow_redirects=True)
+            self.assertEqual(add_prod_res.status_code, 200)
+
+            new_prod = Product.query.filter_by(code='PRD-EXH-99').first()
+            self.assertIsNotNone(new_prod)
+            self.assertEqual(new_prod.status, 'Pending')
+
+            # 4. Verify resources reflect before planning
+            prod_list_res = self.client.get('/products')
+            self.assertEqual(prod_list_res.status_code, 200)
+            self.assertIn(b'Titanium Exhaust Manifold', prod_list_res.data)
+
+            dash_res_before = self.client.get('/dashboard')
+            self.assertEqual(dash_res_before.status_code, 200)
+            self.assertIn(b'Custom Laser Welder Station', dash_res_before.data)
+
+            # 5. Run the CSP solver on the expanded dataset
+            gen_res = self.client.post('/planner/generate', follow_redirects=True)
+            self.assertEqual(gen_res.status_code, 200)
+
+            # 6. Verify that the new product was dynamically scheduled onto the new machine & worker
+            welding_schedule = Schedule.query.filter_by(product_id=new_prod.id).first()
+            self.assertIsNotNone(welding_schedule, "New product must have a scheduled slot")
+            self.assertEqual(welding_schedule.machine_id, new_mach.id, "Must be assigned to the new custom machine")
+            self.assertEqual(welding_schedule.worker_id, new_worker.id, "Must be assigned to the new custom worker")
+            self.assertEqual(welding_schedule.status, 'Scheduled')
+
+            # 7. Check that dashboard and utilization dynamically reflect the new scheduled product & load
+            dash_res_after = self.client.get('/dashboard')
+            self.assertEqual(dash_res_after.status_code, 200)
+            self.assertIn(b'Titanium Exhaust Manifold', dash_res_after.data)
+
+            # 2.5 hours / 8.0 hours = 31.2% utilization for the new welder
+            util_res = self.client.get('/utilization')
+            self.assertEqual(util_res.status_code, 200)
+            self.assertIn(b'Custom Laser Welder Station', util_res.data)
+            self.assertIn(b'31.2%', util_res.data)
+
+            # 8. Reset demo data cleanly
+            self.client.post('/load-demo', follow_redirects=True)
+
 if __name__ == '__main__':
     unittest.main()

@@ -23,7 +23,18 @@ latest_ai_run = {
 @planner_bp.route('/')
 def home():
     """Page 1 — Home Landing Page"""
-    return render_template('index.html')
+    products_count = Product.query.count()
+    machines_count = Machine.query.count()
+    workers_count = Worker.query.count()
+    schedules_count = Schedule.query.count()
+    return render_template(
+        'index.html',
+        products_count=products_count,
+        machines_count=machines_count,
+        workers_count=workers_count,
+        schedules_count=schedules_count,
+        latest_ai=latest_ai_run
+    )
 
 @planner_bp.route('/planner')
 def planner_view():
